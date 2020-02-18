@@ -3,7 +3,7 @@
 var scene = new THREE.Scene();
 var controls = null;
 var camera = null;
-
+var VAN;
 
 var renderer = new THREE.WebGLRenderer();
 
@@ -226,7 +226,7 @@ function d3Plot (model, params) {
 			lastClickText
 		};
 		console.log ({ m: 'three.setSelectedLabels', selection });
-		parent.postMessage({ vanodi: {nonce: model.getNonce(), op: 'selectLabels', selection}}, '*')
+		VAN.postMessage({ op: 'selectLabels', selection })
 	};
 
 	return {};
