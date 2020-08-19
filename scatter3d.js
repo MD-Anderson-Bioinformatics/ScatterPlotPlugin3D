@@ -7,7 +7,6 @@ var VAN = new Vanodi ({
 	name: 'Scatter3D',
 	axes: [
 		{ axisLabel: 'Points Axis',
-		  group: [ { label: "Group", baseid: 'ugroup', min: 0, max: 1 } ],
 		  coco: [ { name: 'Coordinate', baseid: 'coordinate', min: 3, max: 3 },
 			  { name: 'Covariate', baseid: 'covariate', min: 1, max: 1 }] }
 	],
