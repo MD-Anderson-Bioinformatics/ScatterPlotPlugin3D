@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>threejs</title>
+		<meta charset='utf-8'/>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+			h1, p, a { font-family: Helvetica; }
+		</style>
+		<script src="js/three.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
+		<script type="module" src="demo-plot.js"></script>
+		<script type="module">
+			import {Plot3D} from './demo-plot.js';
+			document.addEventListener("DOMContentLoaded", function(event) {
+				d3.tsv('demo_data/data.tsv').then(function(data) {
+					Plot3D.createPlot(data);
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<p>Testing initial ideas with <a href='https://threejs.org' target='_blank'>threejs.</a></p>
+		<canvas id='main-plot'></canvas>
+	</body>
+
+</html>
