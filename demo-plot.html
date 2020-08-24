@@ -16,7 +16,15 @@
 			import {Plot3D} from './demo-plot.js';
 			document.addEventListener("DOMContentLoaded", function(event) {
 				d3.tsv('demo_data/data.tsv').then(function(data) {
-					Plot3D.createPlot(data);
+					const plotOptions = {
+						pointSize: 0.1,
+						xLabel: 'x-axis',
+						yLabel: 'y-axis',
+						zLabel: 'z-axis',
+						plotTitle: 'Demonstration',
+						legendTitle: 'i am legend'
+					}
+					Plot3D.createPlot(data, plotOptions);
 				})
 			})
 		</script>

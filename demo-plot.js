@@ -6,17 +6,33 @@ export const Plot3D = {
 	createPlot
 };
 
-function createPlot(data) {
+function initializePlotOptions(plotOptions) {
+	var op = {}
+	op.pointSize = plotOptions.hasOwnProperty('pointSize') ? plotOptions.pointSize : 4;
+	op.backgroundColor = plotOptions.hasOwnProperty('backgroundColor') ? plotOptions.backgroundColor : 'ivory';
+	op.textColor = plotOptions.hasOwnProperty('textColor') ? plotOptions.textColor : 'grey';
+	op.highlightColor = plotOptions.hasOwnProperty('highlightColor') ? plotOptions.highlightColor : 'steelblue';
+	op.lassoColor = plotOptions.hasOwnProperty('lassoColor') ? plotOptions.lassoColor : 'black';
+	op.xLabel = plotOptions.hasOwnProperty('xLabel') ? plotOptions.xLabel : 'x data';
+	op.yLabel = plotOptions.hasOwnProperty('yLabel') ? plotOptions.yLabel : 'y data';
+	op.zLabel = plotOptions.hasOwnProperty('zLabel') ? plotOptions.zLabel : 'z data';
+	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
+	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
+	return op
+}
+
+function createPlot(data, _plotOptions) {
+	let plotOptions = initializePlotOptions(_plotOptions)
 	let scene = new THREE.Scene()
-	scene.background = new THREE.Color('#ffffff')
-	let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	scene.background = new THREE.Color(plotOptions.backgroundColor)
+	let camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000);
 	let renderer = new THREE.WebGLRenderer({
 		canvas: document.getElementById('main-plot')
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
-	let pointSize = 0.1
+	let pointSize = plotOptions.pointSize;
 	let sphereGeo = new THREE.SphereGeometry(pointSize, 10, 10);
 
 	// add axes
@@ -36,7 +52,49 @@ function createPlot(data) {
 	let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
 	let zAxis = new THREE.Line(zGeometry, zAxesMaterial)
 	scene.add(zAxis)
-	camera.position.z = 15;
+	camera.position.z = 25;
+
+	// add axes labels
+	var makeLabel = null;
+	const fontLoader = new THREE.FontLoader();
+	var font = fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
+		console.log({mar4: 'top of font loader'})
+		makeLabel = function ( labelText ) {
+			return new THREE.TextGeometry( labelText, {
+				font: font,
+				size: 1,
+				height: 0.04
+			} );
+		};
+		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
+		const axisLabels = [];
+		function addLabel (axis, labelText) {
+			console.log({mar4: 'top of addLabel'})
+			if (makeLabel) {
+				const labelMesh = makeLabel (labelText);
+				labelMesh.computeBoundingBox();
+				const labelCenter = (labelMesh.boundingBox.max.x - labelMesh.boundingBox.min.x) / 2.0;
+				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
+				addAxisLabel ();
+				function addAxisLabel () {
+					const labelObject = new THREE.Mesh (labelMesh, axisLabelMaterial);
+					labelObject.position[axis] = 1
+					labelObject.position[ax1] = 0; 
+					labelObject.position[ax2] = 0; 
+					if (axis === 'y') labelObject.rotation.z = Math.PI/2;
+					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
+					scene.add (labelObject);
+					axisLabels.push (labelObject);
+					console.log({mar4: 'bottom of addAxisLabel', labelObject: labelObject, ax1: ax1, ax2: ax2, axis: axis, labelCenter: labelCenter})
+				}
+			}
+		}
+		addLabel('x',plotOptions.xLabel)
+		addLabel('y',plotOptions.yLabel)
+		addLabel('z',plotOptions.zLabel)
+	}); // end of fontLoader
+
+	console.log({mar4: 'added x-axis label'});
 
 	/* Function to create random demo data */
 	function createRandomData(nPoints,maxVal) {
