@@ -3,7 +3,7 @@
 // Vanodi module.
 //
 
-function Vanodi (options) {
+export function Vanodi (options) {
 	this.init (options);
 	const _this = this;
 	window.addEventListener('message', function (msg) {
@@ -45,7 +45,6 @@ Vanodi.prototype.dispatchMessage = function dispatchMessage (msg) {
 	const vanodi = msg && msg.data && msg.data.vanodi;
 	if (!vanodi) return;
 
-	console.log({mar4: 'processing Vanodi message', vanodi });
 	if (!vanodi.hasOwnProperty('nonce')) {
 		console.log('vanodi message: no nonce');
 		return;

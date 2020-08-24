@@ -58,7 +58,6 @@ function createPlot(data, _plotOptions) {
 	var makeLabel = null;
 	const fontLoader = new THREE.FontLoader();
 	var font = fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
-		console.log({mar4: 'top of font loader'})
 		makeLabel = function ( labelText ) {
 			return new THREE.TextGeometry( labelText, {
 				font: font,
@@ -69,7 +68,6 @@ function createPlot(data, _plotOptions) {
 		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
 		const axisLabels = [];
 		function addLabel (axis, labelText) {
-			console.log({mar4: 'top of addLabel'})
 			if (makeLabel) {
 				const labelMesh = makeLabel (labelText);
 				labelMesh.computeBoundingBox();
@@ -85,7 +83,6 @@ function createPlot(data, _plotOptions) {
 					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
 					scene.add (labelObject);
 					axisLabels.push (labelObject);
-					console.log({mar4: 'bottom of addAxisLabel', labelObject: labelObject, ax1: ax1, ax2: ax2, axis: axis, labelCenter: labelCenter})
 				}
 			}
 		}
@@ -94,7 +91,6 @@ function createPlot(data, _plotOptions) {
 		addLabel('z',plotOptions.zLabel)
 	}); // end of fontLoader
 
-	console.log({mar4: 'added x-axis label'});
 
 	/* Function to create random demo data */
 	function createRandomData(nPoints,maxVal) {
@@ -127,7 +123,6 @@ function createPlot(data, _plotOptions) {
 		})
 		return points;
 	}
-	//let pts = createRandomData(200,10)
 	let pts = organizeData(data)
 	// define colors and materials for points
 	let colors = [...new Set(pts.map( p => {return p.color} ))]
