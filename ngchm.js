@@ -56,7 +56,8 @@ VAN.addMessageListener('plot', function(vanodi) {
 			y: vanodi.data.axes[0].coordinates[1][idx],
 			z: vanodi.data.axes[0].coordinates[2][idx],
 			batch: 'mary',
-			color: covColor
+			color: covColor,
+			id: vanodi.data.axes[0].actualLabels[idx]
 		})
 	})
 	console.log({mar4: 'calling Plot3D', plotData:plotData, plotOptions: plotOptions})
