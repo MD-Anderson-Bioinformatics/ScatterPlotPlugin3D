@@ -21,13 +21,72 @@ function initializePlotOptions(plotOptions) {
 	return op
 }
 
+/* Function to put right-hand-rule axes at origin */
+function addOriginAxes(axisLength, plotOptions, scene, camera, renderer){ 
+	let xPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(axisLength.x*2,0,0)]
+	let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+	let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: 0x000000}));
+	xAxis.name = 'x-axis';
+	xAxis.userData.type = 'axis'
+	scene.add(xAxis)
+	let yPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,axisLength.y*2,0)]
+	let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+	let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: 0x000000}))
+	yAxis.name = 'y-axis'
+	yAxis.userData.type = 'axis'
+	scene.add(yAxis)
+	let zPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,axisLength.z*2)]
+	let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+	let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: 0x000000}))
+	zAxis.name = 'z-axis'
+	zAxis.userData.type = 'axis'
+	scene.add(zAxis)
+	// add axes labels
+	var makeLabel = null;
+	const fontLoader = new THREE.FontLoader();
+	var font = fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
+		makeLabel = function ( labelText ) {
+			return new THREE.TextGeometry( labelText, {
+				font: font,
+				size: 1,
+				height: 0.04
+			} );
+		};
+		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
+		function addLabel (axis, labelText) {
+			if (makeLabel) {
+				const labelMesh = makeLabel (labelText);
+				labelMesh.computeBoundingBox();
+				const labelCenter = (labelMesh.boundingBox.max.x - labelMesh.boundingBox.min.x) / 2.0;
+				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
+				addAxisLabel ();
+				function addAxisLabel () {
+					const labelObject = new THREE.Mesh (labelMesh, axisLabelMaterial);
+					labelObject.position[axis] = 1
+					labelObject.position[ax1] = 0; 
+					labelObject.position[ax2] = 0; 
+					if (axis === 'y') labelObject.rotation.z = Math.PI/2;
+					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
+					labelObject.name = labelText;
+					labelObject.userData.type = 'axis label'
+					scene.add (labelObject);
+				}
+			}
+		}
+		addLabel('x',plotOptions.xLabel)
+		addLabel('y',plotOptions.yLabel)
+		addLabel('z',plotOptions.zLabel)
+		renderer.render(scene, camera);
+	}); // end of fontLoader
+} // end function addOriginAxes
+
 /* Main function to create 3-d scatter plot */
 function createPlot(data, _plotOptions) {
 	let plotOptions = initializePlotOptions(_plotOptions)
 	let scene = new THREE.Scene()
 	scene.background = new THREE.Color(plotOptions.backgroundColor)
 	let fov = 60; // 50 is default
-	let aspect = 2; // was window.innerWidth / window.innerheight;
+	let aspect = 1; // window.innerWidth / window.innerHeight;
 	let near = 0.1
 	let far = 200; // was 1000
 	let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -91,68 +150,7 @@ function createPlot(data, _plotOptions) {
 	}  // end clase PickHelper
 
 
-	// add axes
-	let axisLength = 10
-	let xPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(axisLength*2,0,0)]
-	let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
-	let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: 0x000000}));
-	xAxis.name = 'x-axis';
-	xAxis.userData.type = 'axis'
-	scene.add(xAxis)
-	let yPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,axisLength*2,0)]
-	let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
-	let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: 0x000000}))
-	yAxis.name = 'y-axis'
-	yAxis.userData.type = 'axis'
-	scene.add(yAxis)
-	let zPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,axisLength*2)]
-	let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
-	let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: 0x000000}))
-	zAxis.name = 'z-axis'
-	zAxis.userData.type = 'axis'
-	scene.add(zAxis)
-	camera.position.z = 30; // was 25
-
-	// add axes labels
-	var makeLabel = null;
-	const fontLoader = new THREE.FontLoader();
-	var font = fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
-		makeLabel = function ( labelText ) {
-			return new THREE.TextGeometry( labelText, {
-				font: font,
-				size: 1,
-				height: 0.04
-			} );
-		};
-		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
-		const axisLabels = [];
-		function addLabel (axis, labelText) {
-			if (makeLabel) {
-				const labelMesh = makeLabel (labelText);
-				labelMesh.computeBoundingBox();
-				const labelCenter = (labelMesh.boundingBox.max.x - labelMesh.boundingBox.min.x) / 2.0;
-				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
-				addAxisLabel ();
-				function addAxisLabel () {
-					const labelObject = new THREE.Mesh (labelMesh, axisLabelMaterial);
-					labelObject.position[axis] = 1
-					labelObject.position[ax1] = 0; 
-					labelObject.position[ax2] = 0; 
-					if (axis === 'y') labelObject.rotation.z = Math.PI/2;
-					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
-					labelObject.name = labelText;
-					labelObject.userData.type = 'axis label'
-					scene.add (labelObject);
-					axisLabels.push (labelObject);
-				}
-			}
-		}
-		addLabel('x',plotOptions.xLabel)
-		addLabel('y',plotOptions.yLabel)
-		addLabel('z',plotOptions.zLabel)
-		renderer.render(scene, camera);
-	}); // end of fontLoader
-
+	//jnlet axisLength = 10
 
 	/* Function to organize input data 
 	*/
@@ -170,16 +168,14 @@ function createPlot(data, _plotOptions) {
 	colors.forEach( c => {
 		groupMaterials[c] = new THREE.MeshBasicMaterial({color: c})
 	})
-	// get the maxes
-	let maxX = 0, maxY = 0, maxZ = 0;
+	let max = {x: 0, y: 0, z: 0}
 	pts.forEach(pt => {
-		if (Math.abs(pt.x) > maxX) { maxX = Math.abs(pt.x) }
-		if (Math.abs(pt.y) > maxY) { maxY = Math.abs(pt.y) }
-		if (Math.abs(pt.z) > maxZ) { maxZ = Math.abs(pt.z) }
+		if (Math.abs(pt.x) > max.x) { max.x = Math.abs(pt.x) }
+		if (Math.abs(pt.y) > max.y) { max.y = Math.abs(pt.y) }
+		if (Math.abs(pt.z) > max.z) { max.z = Math.abs(pt.z) }
 	})
-	// (not sure if we need this sX, sY, sZ...it came from bmbrooms proof-of-principle implementation,
-	//  maybe used when things are zoomed?)
-	let sX = axisLength/maxX, sY = axisLength/maxY, sZ = axisLength/maxZ;
+	let axisLength = {x: 5, y: 5, z: 5}
+	let sX = axisLength.x/max.x, sY = axisLength.y/max.y, sZ = axisLength.z/max.z;
 	pts.forEach(pt => {
 		let ptObject = new THREE.Mesh(sphereGeo, groupMaterials[pt.color])
 		ptObject.position.set(pt.x*sX, pt.y*sY, pt.z*sZ)
@@ -189,6 +185,8 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.group = pt.group
 		scene.add(ptObject)
 	})
+	addOriginAxes(axisLength, plotOptions, scene, camera, renderer);
+	camera.position.z = 30; // was 25
 
 	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse
 	clearMousePointerPosition()
