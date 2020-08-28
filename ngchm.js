@@ -30,11 +30,20 @@ var VAN = new Vanodi({
 		}
 	],
 	options: [
+		{ label: 'Axes Type', type: 'dropdown', choices: [
+			{label: 'Box', value: 'box'},
+			{label: 'Origin', value: 'origin'}
+		], helpText: 'Axes draw type'},
 		{ label: 'Background Color', type: 'dropdown', choices: [
 			{label: 'White', value: 'white'},
 			{label: 'Ivory', value: 'ivory'},
 			{label: 'Black', value: 'black'},
 			{label: 'Grey', value: 'grey'}
+		]},
+		{ label: 'Point Size', type: 'dropdown', choices: [
+			{label: 'Medium', value: 0.1},
+			{label: 'Small', value: 0.04},
+			{label: 'Large', value: 0.2}
 		]}
 	]
 })
@@ -46,7 +55,8 @@ VAN.addMessageListener('plot', function(vanodi) {
 		yLabel: vanodi.config.axes[0].coordinates[1].label, 
 		zLabel: vanodi.config.axes[0].coordinates[2].label, 
 		backgroundColor: vanodi.config.options['Background Color'],
-		pointSize: 0.1
+		pointSize: vanodi.config.options['Point Size'],
+		axesDrawType: vanodi.config.options['Axes Type']
 	}
 	// organize data to plot
 	let plotData = []

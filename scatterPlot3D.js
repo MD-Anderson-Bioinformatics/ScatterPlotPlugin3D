@@ -18,6 +18,7 @@ function initializePlotOptions(plotOptions) {
 	op.zLabel = plotOptions.hasOwnProperty('zLabel') ? plotOptions.zLabel : 'z data';
 	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
+	op.axesDrawType = plotOptions.hasOwnProperty('axesDrawType') ? plotOptions.axesDrawType : 'origin';
 	return op
 }
 
@@ -57,7 +58,6 @@ function addOriginAxes(axisLength, plotOptions, scene, camera, renderer){
 			if (makeLabel) {
 				const labelMesh = makeLabel (labelText);
 				labelMesh.computeBoundingBox();
-				const labelCenter = (labelMesh.boundingBox.max.x - labelMesh.boundingBox.min.x) / 2.0;
 				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
 				addAxisLabel ();
 				function addAxisLabel () {
@@ -79,6 +79,71 @@ function addOriginAxes(axisLength, plotOptions, scene, camera, renderer){
 		renderer.render(scene, camera);
 	}); // end of fontLoader
 } // end function addOriginAxes
+
+/* Function to create box axes */
+function addBoxAxes(axisLength, plotOptions, scene, camera, renderer) {
+	const axesMaterial = new THREE.LineBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.5 } );
+	let range = 5
+	const axesGeometry = new THREE.Geometry();
+	axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
+	axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
+	const axesObject = new THREE.Line (axesGeometry, axesMaterial);
+	scene.add(axesObject)
+	var makeLabel = null;
+	const fontLoader = new THREE.FontLoader();
+	fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
+		makeLabel = function ( labelText ) {
+			return new THREE.TextGeometry( labelText, {
+				font: font,
+				size: 1,
+				height: 0.04
+			} );
+		}; // end function makeLabel
+		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
+		function addLabel (axis, labelText) {
+			if (makeLabel) {
+				const labelDist =  range ; //105;
+				const labelMesh = makeLabel ("-  " + labelText + "  +");
+				labelMesh.computeBoundingBox();
+				const labelCenter = (labelMesh.boundingBox.max.x - labelMesh.boundingBox.min.x) / 2.0;
+				const positiveMesh = makeLabel ("+");
+				const negativeMesh = makeLabel ("-");
+				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
+				addAxisLabel (labelDist, labelDist);
+				addAxisLabel (labelDist, -labelDist);
+				addAxisLabel (-labelDist, -labelDist);
+				addAxisLabel (-labelDist, labelDist);
+				function addAxisLabel (v1, v2) {
+					const labelObject = new THREE.Mesh (labelMesh, axisLabelMaterial);
+					labelObject.position[axis] = -labelCenter; 
+					labelObject.position[ax1] = v1;
+					labelObject.position[ax2] = v2;
+					if (axis === 'y') labelObject.rotation.z = Math.PI/2;
+					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
+					scene.add (labelObject);
+				}
+			}
+		}  // end addLabel
+		addLabel('x',plotOptions.xLabel)
+		addLabel('y',plotOptions.yLabel)
+		addLabel('z',plotOptions.zLabel)
+		renderer.render(scene, camera)
+	});  // end fontLoader callback
+}
 
 /* Main function to create 3-d scatter plot */
 function createPlot(data, _plotOptions) {
@@ -183,7 +248,11 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.group = pt.group
 		scene.add(ptObject)
 	})
-	addOriginAxes(axisLength, plotOptions, scene, camera, renderer);
+	if (plotOptions.axesDrawType == 'origin') {
+		addOriginAxes(axisLength, plotOptions, scene, camera, renderer);
+	} else {
+		addBoxAxes(axisLength, plotOptions, scene, camera, renderer) 
+	}
 	camera.position.z = 30; // was 25
 
 	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse
