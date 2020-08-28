@@ -150,14 +150,12 @@ function createPlot(data, _plotOptions) {
 	}  // end clase PickHelper
 
 
-	//jnlet axisLength = 10
-
 	/* Function to organize input data 
 	*/
 	function organizeData(data) {
 		let points = []
 		data.forEach( d => {
-			points.push({ x: d.x, y: d.y, z: d.z, group: d.batch, color: d.color, id: d.id})
+			points.push({ x: +d.x, y: +d.y, z: +d.z, group: d.batch, color: d.color, id: d.id})
 		})
 		return points;
 	}
