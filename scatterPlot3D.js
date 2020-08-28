@@ -272,6 +272,7 @@ function createPlot(data, _plotOptions) {
 		pickPosition.x = (pos.x / mainCanvas.width) * 2 - 1;
 		pickPosition.y = (pos.y / mainCanvas.height) * -2 + 1;
 		pickHelper.pick(pickPosition, scene, camera )
+		renderer.render(scene, camera);
 	}
 
 	/* function to clear mouse position for selecting points */
