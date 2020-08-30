@@ -94,7 +94,7 @@ function addOriginAxes(axisLength, plotOptions, scene, camera, renderer){
 
 /* Function to create box axes */
 function addBoxAxes(axisLength, plotOptions, scene, camera, renderer) {
-	const axesMaterial = new THREE.LineBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.5 } );
+	const axesMaterial = new THREE.LineBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.75 } );
 	let range = 5
 	const axesGeometry = new THREE.Geometry();
 	axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );

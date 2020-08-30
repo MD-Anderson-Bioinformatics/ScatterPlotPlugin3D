@@ -40,6 +40,12 @@ var VAN = new Vanodi({
 			{label: 'Black', value: 'black'},
 			{label: 'Grey', value: 'grey'}
 		]},
+		{ label: 'Highlight Color', type: 'dropdown', choices: [
+			{label: 'Black', value: 'black'},
+			{label: 'White', value: 'white'},
+			{label: 'Grey', value: 'grey'},
+			{label: 'Blue', value: 'blue'}
+		], helpText: 'Color for highlighting points under cursor'},
 		{ label: 'Point Size', type: 'dropdown', choices: [
 			{label: 'Medium', value: 0.1},
 			{label: 'Small', value: 0.04},
@@ -55,6 +61,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 		yLabel: vanodi.config.axes[0].coordinates[1].label, 
 		zLabel: vanodi.config.axes[0].coordinates[2].label, 
 		backgroundColor: vanodi.config.options['Background Color'],
+		highlightColor: vanodi.config.options['Highlight Color'],
 		pointSize: vanodi.config.options['Point Size'],
 		axesDrawType: vanodi.config.options['Axes Render Type']
 	}
