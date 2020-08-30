@@ -6,6 +6,8 @@ export const Plot3D = {
 	createPlot
 };
 
+/* Function to initialize input plot options
+*/
 function initializePlotOptions(plotOptions) {
 	var op = {}
 	op.pointSize = plotOptions.hasOwnProperty('pointSize') ? plotOptions.pointSize : 4;
@@ -20,6 +22,16 @@ function initializePlotOptions(plotOptions) {
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
 	op.axesDrawType = plotOptions.hasOwnProperty('axesDrawType') ? plotOptions.axesDrawType : 'origin';
 	return op
+}
+
+/* Function to organize input data 
+*/
+function organizeData(data) {
+	let points = []
+	data.forEach( d => {
+		points.push({ x: +d.x, y: +d.y, z: +d.z, group: d.batch, color: d.color, id: d.id})
+	})
+	return points;
 }
 
 /* Function to put right-hand-rule axes at origin */
@@ -144,8 +156,60 @@ function addBoxAxes(axisLength, plotOptions, scene, camera, renderer) {
 		renderer.render(scene, camera)
 	});  // end fontLoader callback
 }
+/* Simple class to aid in highlighting points under the mouse
+   Inspired by https://threejsfundamentals.org/threejs/lessons/threejs-picking.html
+*/
+class PickHelper {
+	constructor() {
+		this.raycaster = new THREE.Raycaster();
+		this.pickedObject = null;
+		this.pickedObjectSavedColor = 0;
+		this.tooltip = null;
+	}
+	/* function to pick point under mouse
+	   Casts a ray through the camera frustrum, gets list of objects intersectec
+	   by the ray, and chooses the closest point to the camera to pick.
+	   Colors picked point's group red by changing the material of that point
+	   (we will want to change this to instead just color the specific point)
+	*/
+	pick(normalizedPosition, scene, camera, renderer) {
+		if (this.pickedObject) {
+			this.pickedObject.material.color.set(this.pickedObjectSavedColor);
+			this.pickedObject = undefined;
+			renderer.render(scene, camera);
+		}
+		this.raycaster.setFromCamera(normalizedPosition, camera)
+		const intersectedObjects = this.raycaster.intersectObjects(scene.children)
+			for (let i=0; i<intersectedObjects.length; i++) {
+				if (intersectedObjects[i].object.userData.type == 'data point') {
+					this.pickedObject = intersectedObjects[i].object;
+					this.pickedObjectSavedColor = this.pickedObject.material.color.getHex();
+					this.pickedObject.material.color.set(0xff0000)
+					renderer.render(scene, camera)
+					this.showTooltip(this.pickedObject.userData.id)
+					this.showXYZ(this.pickedObject.userData.coordinates)
+					break
+				}
+			}
+	}
+	/* function to show tooltip */
+	showTooltip(name) {
+		let tooltip = document.getElementById('point-name')
+		if (tooltip) {
+			tooltip.innerHTML = name
+		}
+	}
+	/* function to show XYZ coordinates */
+	showXYZ(coordinates) {
+		let xyzCoords = document.getElementById('show-hover-point-coords')
+		if (xyzCoords) {
+			xyzCoords.innerHTML = coordinates.x + ', ' + coordinates.y + ', ' + coordinates.z
+		}
+	}
+}  // end clase PickHelper
 
-/* Main function to create 3-d scatter plot */
+/* Main function to create 3-d scatter plot. Exported 
+*/
 function createPlot(data, _plotOptions) {
 	let plotOptions = initializePlotOptions(_plotOptions)
 	let scene = new THREE.Scene()
@@ -172,58 +236,9 @@ function createPlot(data, _plotOptions) {
 	let pointSize = plotOptions.pointSize;
 	let sphereGeo = new THREE.SphereGeometry(pointSize, 10, 10);
 
-	/* Simple class to aid in highlighting points under the mouse
-	   Inspired by https://threejsfundamentals.org/threejs/lessons/threejs-picking.html
-	*/
-	class PickHelper {
-		constructor() {
-			this.raycaster = new THREE.Raycaster();
-			this.pickedObject = null;
-			this.pickedObjectSavedColor = 0;
-			this.tooltip = null;
-		}
-		/* function to pick point under mouse
-		   Casts a ray through the camera frustrum, gets list of objects intersectec
-		   by the ray, and chooses the closest point to the camera to pick.
-		   Colors picked point's group red by changing the material of that point
-		   (we will want to change this to instead just color the specific point)
-		*/
-		pick(normalizedPosition, scene, camera ) {
-			if (this.pickedObject) {
-				this.pickedObject.material.color.set(this.pickedObjectSavedColor);
-				this.pickedObject = undefined;
-				renderer.render(scene, camera);
-			}
-			this.raycaster.setFromCamera(normalizedPosition, camera)
-			const intersectedObjects = this.raycaster.intersectObjects(scene.children)
-				for (let i=0; i<intersectedObjects.length; i++) {
-					if (intersectedObjects[i].object.userData.type == 'data point') {
-						this.pickedObject = intersectedObjects[i].object;
-						this.pickedObjectSavedColor = this.pickedObject.material.color.getHex();
-						this.pickedObject.material.color.set(0xff0000)
-						renderer.render(scene, camera)
-						this.showTooltip(this.pickedObject.userData.id)
-						break
-					}
-				}
-		}
-		/* function to show tooltip */
-		showTooltip(name) {
-			let tooltip = document.getElementById('tooltip')
-			tooltip.innerHTML = name
-		}
-	}  // end clase PickHelper
 
 
-	/* Function to organize input data 
-	*/
-	function organizeData(data) {
-		let points = []
-		data.forEach( d => {
-			points.push({ x: +d.x, y: +d.y, z: +d.z, group: d.batch, color: d.color, id: d.id})
-		})
-		return points;
-	}
+
 	let pts = organizeData(data)
 	// define colors and materials for points
 	let colors = [...new Set(pts.map( p => {return p.color} ))]
@@ -246,6 +261,7 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.type = 'data point'
 		ptObject.userData.id = pt.id
 		ptObject.userData.group = pt.group
+		ptObject.userData.coordinates = {x: pt.x, y: pt.y, z: pt.z}
 		scene.add(ptObject)
 	})
 	if (plotOptions.axesDrawType == 'origin') {
@@ -271,7 +287,7 @@ function createPlot(data, _plotOptions) {
 		const pos = getCanvasRelativePosition(event)
 		pickPosition.x = (pos.x / mainCanvas.width) * 2 - 1;
 		pickPosition.y = (pos.y / mainCanvas.height) * -2 + 1;
-		pickHelper.pick(pickPosition, scene, camera )
+		pickHelper.pick(pickPosition, scene, camera, renderer)
 		renderer.render(scene, camera);
 	}
 
@@ -286,7 +302,7 @@ function createPlot(data, _plotOptions) {
 	window.addEventListener('mouseout', clearMousePointerPosition);
 	window.addEventListener('mouseleave', clearMousePointerPosition);
 
-	const pickHelper = new PickHelper()
+	const pickHelper = new PickHelper(renderer)
 
 	renderer.render(scene, camera);
 	pickHelper.pick(pickPosition, scene, camera )
