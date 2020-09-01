@@ -26,7 +26,7 @@
 		<script src="js/OrbitControls.js"></script>
 		<script src="demo_data/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
 		<script type="module" src="scatterPlot3D.js"></script>
-		<script type="module">
+		<script type='module'>
 			import {Plot3D} from './scatterPlot3D.js';
 			document.addEventListener("DOMContentLoaded", function(event) {
 				d3.tsv('demo_data/data.tsv').then(function(data) {
@@ -38,9 +38,20 @@
 						plotTitle: 'Demonstration',
 						legendTitle: 'i am legend',
 						backgroundColor: 'ivory',
-						axesDrawType: 'box'
+						axesDrawType: 'origin'
 					}
 					Plot3D.createPlot(data, plotOptions);
+				function redraw() {
+					let elem = document.getElementById('axesDrawType')
+					plotOptions.axesDrawType = elem.options[elem.selectedIndex].value;
+					elem = document.getElementById('x-axis-label')
+					plotOptions.xLabel = elem.options[elem.selectedIndex].value;
+					plotOptions.yLabel = 'Y'
+					plotOptions.zLabel = 'Z'
+					console.log({mar4: 'redraw clicked', plotOptions: plotOptions});
+					Plot3D.createPlot(data, plotOptions);
+				}
+				window.redraw = redraw;
 				})
 			})
 		</script>
@@ -51,7 +62,18 @@
 				<p id="point-name"></p>
 				<p id='show-hover-point-coords'></p>
 		</div>
-		<!--<p><span id="tooltip"></span></p></div>-->
+		<div>
+			<select name='axesDrawType' id='axesDrawType'>
+				<option value='origin'>Origin Axes</option>
+				<option value='box'>Box Axes</option>
+			</select>
+			<select name='x-axis-label' id='x-axis-label'>
+				<option value='x-axis'>x-axis</option>
+				<option value='X-AXIS'>X-AXIS</option>
+				<option value='X'>X</option>
+			</select>
+			<button onclick="redraw()">Redraw</button>
+		</div>
 		<canvas id='main-plot'></canvas>
 	</body>
 

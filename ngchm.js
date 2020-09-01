@@ -2,10 +2,7 @@ import {Plot3D} from './scatterPlot3D.js'
 import {Vanodi} from './js/vanodi.js'
 
 // Script for interface with NGCHM
-
-
-
-var VAN = new Vanodi({
+export var VAN = new Vanodi({
 	op: 'register',
 	name: 'ScatterPlot3D',
 	axes: [
