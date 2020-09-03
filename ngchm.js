@@ -1,5 +1,6 @@
 import {Plot3D} from './scatterPlot3D.js'
 import {Vanodi} from './js/vanodi.js'
+import {SelectPoints} from './selections.js'
 
 // Script for interface with NGCHM
 export var VAN = new Vanodi({
@@ -41,8 +42,9 @@ export var VAN = new Vanodi({
 			{label: 'Black', value: 'black'},
 			{label: 'White', value: 'white'},
 			{label: 'Grey', value: 'grey'},
-			{label: 'Blue', value: 'blue'}
-		], helpText: 'Color for highlighting points under cursor'},
+			{label: 'Blue', value: 'blue'}, 
+			{label: 'Pink', value: 'hotpink'}
+		], helpText: 'Color for highlighting points under cursor or selected from NGCHM'},
 		{ label: 'Point Size', type: 'dropdown', choices: [
 			{label: 'Medium', value: 0.1},
 			{label: 'Small', value: 0.04},
@@ -52,7 +54,6 @@ export var VAN = new Vanodi({
 })
 
 VAN.addMessageListener('plot', function(vanodi) {
-	console.log({mar4: 'plot message recieved',vanodi: vanodi, daxes: vanodi.data.axes})
 	let plotOptions = {
 		xLabel: vanodi.config.axes[0].coordinates[0].label, 
 		yLabel: vanodi.config.axes[0].coordinates[1].label, 
@@ -69,12 +70,22 @@ VAN.addMessageListener('plot', function(vanodi) {
 			x: vanodi.data.axes[0].coordinates[0][idx],
 			y: vanodi.data.axes[0].coordinates[1][idx],
 			z: vanodi.data.axes[0].coordinates[2][idx],
-			batch: 'mary',
+			batch: '',
 			color: covColor,
 			id: vanodi.data.axes[0].actualLabels[idx]
 		})
 	})
-	console.log({mar4: 'calling Plot3D', plotData:plotData, plotOptions: plotOptions})
+	Plot3D.ngchmAxis = vanodi.config.axes[0].axisName;
 	Plot3D.createPlot(plotData,plotOptions)
 })
 
+/* Message listener to highlight points on the scatter plot that were selected 
+   on the NGCHM
+*/
+VAN.addMessageListener ('makeHiLite', function hiliteMessageHandler (vanodi) {
+	if (Plot3D.ngchmAxis && Plot3D.ngchmAxis.toLowerCase() != vanodi.data.axis.toLowerCase()) {
+		return false;
+	}
+	SelectPoints.clearSelectedPoints();
+	SelectPoints.selectPoints(vanodi.data.pointIds)
+});

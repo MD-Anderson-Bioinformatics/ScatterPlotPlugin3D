@@ -2,6 +2,7 @@
 // Initial ideas for using threejs for 3d scatter plot
 //
 import {VAN} from './ngchm.js';
+import {PickHelper} from './pickHelper.js';
 
 /* Expored Plot3D object containes the function listed here,
    and a few other parameters (e.g. scene, camera, renderer)
@@ -9,6 +10,8 @@ import {VAN} from './ngchm.js';
 export const Plot3D = {
 	createPlot
 };
+
+Plot3D.selectedPointIds = []
 
 /* Function to initialize input plot options
 
@@ -51,6 +54,38 @@ function initializePlotDrawParams() {
 	geo.xyzAxesLength = {x: 5, y: 5, z: 5}
 	geo.boxRange = 5
 	return geo
+}
+
+/* Function to create geometries and materials for points & highlights
+
+   Creates all the geometries and materials used for drawing points and highlight/selection spheres
+
+   Input:
+      groupColors array of colors for each group
+   Output:
+      gm object of geometries and materials with structure:
+          gm.dataPoints.geometry: geometry for points
+          gm.dataPoints.groupMaterials: object of form {<group color> : <group material}
+          gm.highlights.geometry: geometry for highlight spheres
+          gm.highlights.material: material for highlight spheres
+          gm.selection.geometry: geometry for selection spheres
+          gm.selection.material: material for selection spheres
+*/
+function createGeometriesAndMaterials(groupColors) {
+	let gm = {}
+	gm.dataPoints = {}
+	gm.dataPoints.geometry = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize, 10, 10)
+	gm.dataPoints.groupMaterials = {}
+	groupColors.forEach(c => {
+		gm.dataPoints.groupMaterials[c] = new THREE.MeshBasicMaterial({color: c})
+	})
+	gm.highlights = {}
+	gm.highlights.geometry = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize*2, 10, 10)
+	gm.highlights.material = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
+	gm.selection = {}
+	gm.selection.geometry = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize*2, 10, 10)
+	gm.selection.material = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
+	return gm
 }
 
 /* Function to organize input data 
@@ -129,7 +164,7 @@ function addOriginAxes(){
 		addLabel('x',Plot3D.plotOptions.xLabel)
 		addLabel('y',Plot3D.plotOptions.yLabel)
 		addLabel('z',Plot3D.plotOptions.zLabel)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}); // end of fontLoader
 } // end function addOriginAxes
 
@@ -198,110 +233,9 @@ function addBoxAxes() {
 		addLabel('x',Plot3D.plotOptions.xLabel)
 		addLabel('y',Plot3D.plotOptions.yLabel)
 		addLabel('z',Plot3D.plotOptions.zLabel)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 	});  // end fontLoader callback
 }
-
-/* Class PickHelper for highlighting points under mouse
-
-   Inspired by https://threejsfundamentals.org/threejs/lessons/threejs-picking.html
-*/
-class PickHelper {
-	constructor(plotOptions) {
-		this.raycaster = new THREE.Raycaster();
-		this.pickedObject = null;
-		this.tooltip = null;
-		// the hlObject is a sphere used to highlight the point under the cursor
-		this.highlightGeo = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize*2, 10, 10);
-		this.highlightMaterial = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
-		this.hlObject = new THREE.Mesh(this.highlightGeo, this.highlightMaterial)
-		this.hlObject.visible = false
-		this.hlObject.name = 'highlight initial'
-		Plot3D.scene.add(this.hlObject)
-	}
-	/* Function to find data point under mouse
-	   Casts a ray through the Plot3D.camera frustrum, gets list of objects intersectec
-	   by the ray, and chooses the closest point to the Plot3D.camera to pick.
-	*/
-	pick(normalizedPosition) {
-		if (this.pickedObject) {
-			this.pickedObject = undefined;
-		}
-		this.raycaster.setFromCamera(normalizedPosition, Plot3D.camera)
-		const intersectedObjects = this.raycaster.intersectObjects(Plot3D.scene.children)
-		for (let i=0; i<intersectedObjects.length; i++) {
-			if (intersectedObjects[i].object.userData.type == 'data point') {
-				this.pickedObject = intersectedObjects[i].object;
-				this.highlightPoint(this.pickedObject)
-				this.showTooltip(this.pickedObject.userData.id)
-				this.showXYZ(this.pickedObject.userData.coordinates)
-				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-				break
-			}
-		}
-	}
-
-	/* Function to highlight point
-	   Moves the hlObject to the location of datapoint pt and makes it visible,
-	   and sends 'selectLabels' message to parent
-	*/
-	highlightPoint(pt) {
-		this.hlObject.position.set(pt.position.x, pt.position.y, pt.position.z)
-		this.hlObject.userData.type = 'highlight sphere'
-		this.hlObject.userData.id = pt.userData.id
-		this.hlObject.name = 'highlight ' + pt.userData.id
-		this.hlObject.visible = true
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-		VAN.postMessage({
-			op: 'selectLabels',
-			selection: { axis: 'column', pointIds: [pt.userData.id], clickType: 'ctrlClick' }
-		})
-	}
-
-	/* Function to clear highlighted points */
-	clearHighlightedPoints() {
-		this.hlObject.visible = false
-		this.hideTooltip()
-		this.hideXYZ()
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-		VAN.postMessage({
-			op: 'selectLabels',
-			selection: { axis: 'column', pointIds: [], clickType: 'ctrlClick' }
-		})
-	}
-
-	/* Function to show tooltip */
-	showTooltip(name) {
-		let tooltip = document.getElementById('point-name')
-		if (tooltip) {
-			tooltip.innerHTML = name
-		}
-	}
-
-	/* Function to hide tooltip */
-	hideTooltip() {
-		let tooltip = document.getElementById('point-name')
-		if (tooltip) {
-			tooltip.innerHTML = ""
-		}
-	}
-
-	/* Function to show XYZ coordinates */
-	showXYZ(coordinates) {
-		let xyzCoords = document.getElementById('show-hover-point-coords')
-		if (xyzCoords) {
-			xyzCoords.innerHTML = coordinates.x + ', ' + coordinates.y + ', ' + coordinates.z
-		}
-	}
-
-	/* Function to hide XYZ coordinates */
-	hideXYZ() {
-		let xyzCoords = document.getElementById('show-hover-point-coords')
-		if (xyzCoords) {
-			xyzCoords.innerHTML = ""
-		}
-	}
-}  // end class PickHelper
 
 /* Function to clear scene */
 function clearScene() {
@@ -351,24 +285,17 @@ function createPlot(data, _plotOptions) {
 	Plot3D.plotDrawParams = initializePlotDrawParams()
 	initializeScene();
 	const pickHelper = new PickHelper(Plot3D.plotOptions)
-	let sphereGeo = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize, 10, 10);
-
-	let pts = organizeData(data)
-	// define colors and materials for points
-	let colors = [...new Set(pts.map( p => {return p.color} ))]
-	let groupMaterials = {}
-	colors.forEach( c => {
-		groupMaterials[c] = new THREE.MeshBasicMaterial({color: c})
-	})
+	let dataPoints = organizeData(data)
+	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
 	let max = {x: 0, y: 0, z: 0}
-	pts.forEach(pt => {
+	dataPoints.forEach(pt => {
 		if (Math.abs(pt.x) > max.x) { max.x = Math.abs(pt.x) }
 		if (Math.abs(pt.y) > max.y) { max.y = Math.abs(pt.y) }
 		if (Math.abs(pt.z) > max.z) { max.z = Math.abs(pt.z) }
 	})
 	let sX = Plot3D.plotDrawParams.xyzAxesLength.x/max.x, sY = Plot3D.plotDrawParams.xyzAxesLength.y/max.y, sZ = Plot3D.plotDrawParams.xyzAxesLength.z/max.z;
-	pts.forEach(pt => {
-		let ptObject = new THREE.Mesh(sphereGeo, groupMaterials[pt.color])
+	dataPoints.forEach(pt => {
+		let ptObject = new THREE.Mesh(Plot3D.geometriesMaterials.dataPoints.geometry, Plot3D.geometriesMaterials.dataPoints.groupMaterials[pt.color])
 		ptObject.position.set(pt.x*sX, pt.y*sY, pt.z*sZ)
 		ptObject.name = pt.id; 
 		ptObject.userData.type = 'data point'
@@ -401,7 +328,7 @@ function createPlot(data, _plotOptions) {
 		pickPosition.x = (pos.x / Plot3D.mainCanvas.width) * 2 - 1;
 		pickPosition.y = (pos.y / Plot3D.mainCanvas.height) * -2 + 1;
 		pickHelper.pick(pickPosition)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}
 
 	/* function to clear mouse position for selecting points */
@@ -409,29 +336,39 @@ function createPlot(data, _plotOptions) {
 		pickPosition.x = -100000;
 		pickPosition.y = -100000;
 		pickHelper.clearHighlightedPoints()
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}
 
 	window.addEventListener('mousemove',findPointUnderMouse)
 	window.addEventListener('mouseout', clearMousePointerPosition);
 	window.addEventListener('mouseleave', clearMousePointerPosition);
 
-	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */
-	Plot3D.controls.addEventListener( 'change', () => { 
+	/*Plot3D.controls.addEventListener( 'change', () => { 
 		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
-	});
+	});*/
+
+	// marohrdanz Sept 2020
+	// Just here for debugging
+	// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
+	var rendererStats  = new THREEx.RendererStats()
+	rendererStats.domElement.style.position   = 'absolute'
+	rendererStats.domElement.style.left  = '0px'
+	rendererStats.domElement.style.bottom    = '0px'
+	document.body.appendChild( rendererStats.domElement )
 
 	/* marohrdanz: trying not to animate every frame to keep laptop fans from comming on...
 	               but keeping this commented-out code here for the momemt for debugging...*/
-	/*var animate = function() {
+	var animate = function() {
 		window.animationID = requestAnimationFrame(animate);
 		if (Plot3D.controls) Plot3D.controls.update()
 		if (Plot3D.camera) {
 			Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
 		}
+		rendererStats.update(Plot3D.renderer);
 	}
-	animate()*/
+	animate()
 } // end exported function createPlot
 

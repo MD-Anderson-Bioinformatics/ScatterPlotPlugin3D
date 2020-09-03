@@ -25,9 +25,12 @@
 		<script src="js/three.min.js"></script>
 		<script src="js/OrbitControls.js"></script>
 		<script src="demo_data/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
+		<script src="resources/threex.rendererstats.js"></script>
 		<script type="module" src="scatterPlot3D.js"></script>
+		<script type="module" src="selections.js"></script>
 		<script type='module'>
 			import {Plot3D} from './scatterPlot3D.js';
+			import {SelectPoints} from './selections.js';
 			document.addEventListener("DOMContentLoaded", function(event) {
 				d3.tsv('demo_data/data.tsv').then(function(data) {
 					const plotOptions = {
@@ -53,6 +56,15 @@
 				}
 				window.redraw = redraw;
 				})
+				function addSpheres() {
+					let pointsList = ['Sitdolorevelit.-7','Sitdolorevelit.-2']
+					SelectPoints.selectPoints(pointsList);
+				}
+				window.addSpheres = addSpheres;
+				function removeSpheres() {
+					SelectPoints.clearSelectedPoints();
+				}
+				window.removeSpheres = removeSpheres;
 			})
 		</script>
 	</head>
@@ -73,6 +85,8 @@
 				<option value='X'>X</option>
 			</select>
 			<button onclick="redraw()">Redraw</button>
+			<button onclick="addSpheres()">Add Spheres</button>
+			<button onclick="removeSpheres()">Remove Spheres</button>
 		</div>
 		<canvas id='main-plot'></canvas>
 	</body>
