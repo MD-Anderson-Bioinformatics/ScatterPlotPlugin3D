@@ -66,6 +66,24 @@
 				}
 				window.removeSpheres = removeSpheres;
 			})
+			// Just here for debugging
+			// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
+			var rendererStats  = new THREEx.RendererStats()
+			rendererStats.domElement.style.position   = 'absolute'
+			rendererStats.domElement.style.left  = '0px'
+			rendererStats.domElement.style.bottom    = '0px'
+			document.body.appendChild( rendererStats.domElement )
+			/* marohrdanz: for the demo-only, animate every frame
+			          (for the main index.html page, only rendering when things change)*/
+			var animate = function() {
+				window.animationID = requestAnimationFrame(animate);
+				if (Plot3D.controls) Plot3D.controls.update()
+				if (Plot3D.camera) {
+					Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
+				}
+				rendererStats.update(Plot3D.renderer);
+			}
+			animate()
 		</script>
 	</head>
 	<body>

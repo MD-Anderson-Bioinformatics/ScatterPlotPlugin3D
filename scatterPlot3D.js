@@ -164,7 +164,7 @@ function addOriginAxes(){
 		addLabel('x',Plot3D.plotOptions.xLabel)
 		addLabel('y',Plot3D.plotOptions.yLabel)
 		addLabel('z',Plot3D.plotOptions.zLabel)
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}); // end of fontLoader
 } // end function addOriginAxes
 
@@ -233,7 +233,7 @@ function addBoxAxes() {
 		addLabel('x',Plot3D.plotOptions.xLabel)
 		addLabel('y',Plot3D.plotOptions.yLabel)
 		addLabel('z',Plot3D.plotOptions.zLabel)
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 	});  // end fontLoader callback
 }
 
@@ -328,7 +328,7 @@ function createPlot(data, _plotOptions) {
 		pickPosition.x = (pos.x / Plot3D.mainCanvas.width) * 2 - 1;
 		pickPosition.y = (pos.y / Plot3D.mainCanvas.height) * -2 + 1;
 		pickHelper.pick(pickPosition)
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}
 
 	/* function to clear mouse position for selecting points */
@@ -336,39 +336,18 @@ function createPlot(data, _plotOptions) {
 		pickPosition.x = -100000;
 		pickPosition.y = -100000;
 		pickHelper.clearHighlightedPoints()
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}
 
 	window.addEventListener('mousemove',findPointUnderMouse)
 	window.addEventListener('mouseout', clearMousePointerPosition);
 	window.addEventListener('mouseleave', clearMousePointerPosition);
 
-	//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */
-	/*Plot3D.controls.addEventListener( 'change', () => { 
+	Plot3D.controls.addEventListener( 'change', () => { 
 		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
-	});*/
-
-	// marohrdanz Sept 2020
-	// Just here for debugging
-	// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
-	var rendererStats  = new THREEx.RendererStats()
-	rendererStats.domElement.style.position   = 'absolute'
-	rendererStats.domElement.style.left  = '0px'
-	rendererStats.domElement.style.bottom    = '0px'
-	document.body.appendChild( rendererStats.domElement )
-
-	/* marohrdanz: trying not to animate every frame to keep laptop fans from comming on...
-	               but keeping this commented-out code here for the momemt for debugging...*/
-	var animate = function() {
-		window.animationID = requestAnimationFrame(animate);
-		if (Plot3D.controls) Plot3D.controls.update()
-		if (Plot3D.camera) {
-			Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
-		}
-		rendererStats.update(Plot3D.renderer);
-	}
-	animate()
+	});
 } // end exported function createPlot
 

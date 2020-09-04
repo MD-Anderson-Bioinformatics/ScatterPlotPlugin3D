@@ -48,7 +48,7 @@ export class PickHelper {
 				this.highlightPoint(this.pickedObject)
 				this.showTooltip(this.pickedObject.userData.id)
 				this.showXYZ(this.pickedObject.userData.coordinates)
-				//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 				break
 			}
 		}
@@ -64,8 +64,7 @@ export class PickHelper {
 		this.hlObject.userData.id = pt.userData.id
 		this.hlObject.name = 'highlight ' + pt.userData.id
 		this.hlObject.visible = true
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-		//selectedPointIds.push(pt.userData.id)
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		let tmpSelectedPointIds = Plot3D.selectedPointIds.slice()
 		tmpSelectedPointIds.push(pt.userData.id)
 		this.postSelectLabels(tmpSelectedPointIds,'ctrlClick')
@@ -73,11 +72,10 @@ export class PickHelper {
 
 	/* Function to clear highlighted points */
 	clearHighlightedPoints() {
-		//clearSelectedPointIds()
 		this.hlObject.visible = false
 		this.hideTooltip()
 		this.hideXYZ()
-		//Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		this.postSelectLabels(Plot3D.selectedPointIds, 'ctrlClick')
 	}
 
