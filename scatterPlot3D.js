@@ -151,10 +151,11 @@ function createScales(dataPoints) {
 		if (Math.abs(pt.y) > max.y) { max.y = Math.abs(pt.y) }
 		if (Math.abs(pt.z) > max.z) { max.z = Math.abs(pt.z) }
 	})
+	let padding = 0.5;
 	let scale = {
-		x: Plot3D.plotDrawParams.xyzAxesLength.x/max.x,
-		y: Plot3D.plotDrawParams.xyzAxesLength.y/max.y,
-		z: Plot3D.plotDrawParams.xyzAxesLength.z/max.z
+		x: (Plot3D.plotDrawParams.xyzAxesLength.x - padding)/max.x,
+		y: (Plot3D.plotDrawParams.xyzAxesLength.y - padding)/max.y,
+		z: (Plot3D.plotDrawParams.xyzAxesLength.z - padding)/max.z
 	}
 	return scale
 }
