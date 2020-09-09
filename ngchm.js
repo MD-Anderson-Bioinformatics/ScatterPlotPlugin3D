@@ -32,6 +32,10 @@ export var VAN = new Vanodi({
 			{label: 'Box', value: 'box'},
 			{label: 'Origin', value: 'origin'}
 		], helpText: '<u>Box</u>: axes rendered as cube around data.<br><u>Origin</u>: axes rendered as Cartesian xyz at origin'},
+		{ label: 'Color Axes', type: 'dropdown', choices: [
+			{label: 'On', value: 'on'},
+			{label: 'Off', value: 'off'}
+		], helpText: 'Color each of the X, Y, and Z axes a different color'},
 		{ label: 'Background Color', type: 'dropdown', choices: [
 			{label: 'White', value: 'white'},
 			{label: 'Ivory', value: 'ivory'},
@@ -61,7 +65,8 @@ VAN.addMessageListener('plot', function(vanodi) {
 		backgroundColor: vanodi.config.options['Background Color'],
 		highlightColor: vanodi.config.options['Highlight Color'],
 		pointSize: vanodi.config.options['Point Size'],
-		axesDrawType: vanodi.config.options['Axes Render Type']
+		axesDrawType: vanodi.config.options['Axes Render Type'],
+		colorAxes: vanodi.config.options['Color Axes']
 	}
 	// organize data to plot
 	let plotData = []

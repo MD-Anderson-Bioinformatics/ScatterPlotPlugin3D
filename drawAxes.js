@@ -9,24 +9,51 @@ import {Plot3D} from './scatterPlot3D.js';
   Most of the options are hard coded or specified by Plot3D.plotOptions
 */
 export function addOriginAxes(){ 
-	let xPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(Plot3D.plotDrawParams.xyzAxesLength.x*2,0,0)]
-	let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
-	let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: 0x808080}));
-	xAxis.name = 'x-axis';
-	xAxis.userData.type = 'axis'
-	Plot3D.scene.add(xAxis)
-	let yPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,Plot3D.plotDrawParams.xyzAxesLength.y*2,0)]
-	let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
-	let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
-	yAxis.name = 'y-axis'
-	yAxis.userData.type = 'axis'
-	Plot3D.scene.add(yAxis)
-	let zPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,Plot3D.plotDrawParams.xyzAxesLength.z*2)]
-	let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
-	let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
-	zAxis.name = 'z-axis'
-	zAxis.userData.type = 'axis'
-	Plot3D.scene.add(zAxis)
+	if (Plot3D.plotOptions.colorAxes == 'on') {
+		let xPoints = [
+			new THREE.Vector3(-Plot3D.plotDrawParams.xyzAxesLength.x,0,0), 
+			new THREE.Vector3(Plot3D.plotDrawParams.xyzAxesLength.x,0,0)]
+		let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+		let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.xAxisColor}));
+		xAxis.name = 'x-axis';
+		xAxis.userData.type = 'axis'
+		Plot3D.scene.add(xAxis)
+		let yPoints = [
+			new THREE.Vector3(0,-Plot3D.plotDrawParams.xyzAxesLength.y,0), 
+			new THREE.Vector3(0,Plot3D.plotDrawParams.xyzAxesLength.y,0)]
+		let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+		let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.yAxisColor}))
+		yAxis.name = 'y-axis'
+		yAxis.userData.type = 'axis'
+		Plot3D.scene.add(yAxis)
+		let zPoints = [
+				new THREE.Vector3(0,0,-Plot3D.plotDrawParams.xyzAxesLength.z), 
+				new THREE.Vector3(0,0,Plot3D.plotDrawParams.xyzAxesLength.z)]
+		let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+		let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.zAxisColor}))
+		zAxis.name = 'z-axis'
+		zAxis.userData.type = 'axis'
+		Plot3D.scene.add(zAxis)
+	} else {
+		let xPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(Plot3D.plotDrawParams.xyzAxesLength.x*2,0,0)]
+		let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+		let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: 0x808080}));
+		xAxis.name = 'x-axis';
+		xAxis.userData.type = 'axis'
+		Plot3D.scene.add(xAxis)
+		let yPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,Plot3D.plotDrawParams.xyzAxesLength.y*2,0)]
+		let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+		let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
+		yAxis.name = 'y-axis'
+		yAxis.userData.type = 'axis'
+		Plot3D.scene.add(yAxis)
+		let zPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,Plot3D.plotDrawParams.xyzAxesLength.z*2)]
+		let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+		let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
+		zAxis.name = 'z-axis'
+		zAxis.userData.type = 'axis'
+		Plot3D.scene.add(zAxis)
+	}
 	// add axes labels
 	var makeLabel = null;
 	const fontLoader = new THREE.FontLoader();
@@ -69,29 +96,87 @@ export function addOriginAxes(){
 
   Creates box-style axes centered at the origin with axis labels
   Most of the options are hard coded or specified by Plot3D.plotOptions
+  TODO: make this code a little tighter
 */
 export function addBoxAxes() {
-	const axesMaterial = new THREE.LineBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.75 } );
-	const axesGeometry = new THREE.Geometry();
+	let axesMaterial, axisMaterial
 	let range = Plot3D.plotDrawParams.boxRange;
-	axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
-	axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
-	const axesObject = new THREE.Line (axesGeometry, axesMaterial);
-	Plot3D.scene.add(axesObject)
+	if (Plot3D.plotOptions.colorAxes == 'on') {
+		// draw x axes
+		axisMaterial = new THREE.LineBasicMaterial( { color: Plot3D.plotDrawParams.xAxisColor, transparent: true, opacity: 0.75 } );
+		let axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  -range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range, range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  -range, range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		// draw y axes
+		axisMaterial = new THREE.LineBasicMaterial( { color: Plot3D.plotDrawParams.yAxisColor, transparent: true, opacity: 0.75 } );
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( range,  -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3( range,  range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( range,  -range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( range,  range, range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		// draw z axes
+		axisMaterial = new THREE.LineBasicMaterial( { color: Plot3D.plotDrawParams.zAxisColor, transparent: true, opacity: 0.75 } );
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( range, range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( range, range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  -range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( range, -range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( range, -range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+		axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axisMaterial))
+	} else {
+		axesMaterial = new THREE.LineBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.75 } );
+		const axesGeometry = new THREE.Geometry();
+		axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range, -range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range, -range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3( -range,  range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range, -range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range,  range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range, -range,  range) );
+		axesGeometry.vertices.push (new THREE.Vector3(  range, -range, -range) );
+		Plot3D.scene.add(new THREE.Line(axesGeometry, axesMaterial));
+	}
 	var makeLabel = null;
 	const fontLoader = new THREE.FontLoader();
 	fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {

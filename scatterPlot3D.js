@@ -39,6 +39,7 @@ function initializePlotOptions(plotOptions) {
 	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
 	op.axesDrawType = plotOptions.hasOwnProperty('axesDrawType') ? plotOptions.axesDrawType : 'origin';
+	op.colorAxes = plotOptions.hasOwnProperty('colorAxes') ? plotOptions.colorAxes : 'on';
 	return op
 }
 
@@ -53,8 +54,11 @@ function initializePlotOptions(plotOptions) {
 function initializePlotDrawParams() {
 	let geo  = {}
 	let len = 9;
-	geo.xyzAxesLength = {x: len, y: len, z: len}
-	geo.boxRange = len 
+	geo.xyzAxesLength = {x: len, y: len, z: len} // for axes at origin
+	geo.boxRange = len  // for box axes
+	geo.xAxisColor = '#347aeb' 
+	geo.yAxisColor =  '#eb347d'
+	geo.zAxisColor =  '#46b533'
 	return geo
 }
 
