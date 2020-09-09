@@ -38,8 +38,12 @@ function initializePlotOptions(plotOptions) {
 	op.zLabel = plotOptions.hasOwnProperty('zLabel') ? plotOptions.zLabel : 'z data';
 	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
-	op.axesDrawType = plotOptions.hasOwnProperty('axesDrawType') ? plotOptions.axesDrawType : 'origin';
 	op.colorAxes = plotOptions.hasOwnProperty('colorAxes') ? plotOptions.colorAxes : 'on';
+	if (plotOptions.hasOwnProperty('showOriginAxes')) {
+		op.showOriginAxes = (plotOptions.showOriginAxes == 'true')
+	} else {
+		op.showOriginAxes = true
+	}
 	return op
 }
 
@@ -189,10 +193,9 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.coordinates = {x: pt.x, y: pt.y, z: pt.z}
 		Plot3D.scene.add(ptObject)
 	})
-	if (Plot3D.plotOptions.axesDrawType == 'origin') {
-		addOriginAxes();
-	} else {
-		addBoxAxes() 
+	addBoxAxes();
+	if (Plot3D.plotOptions.showOriginAxes) {
+		addOriginAxes()
 	}
 	Plot3D.camera.position.z = 30; // was 25
 

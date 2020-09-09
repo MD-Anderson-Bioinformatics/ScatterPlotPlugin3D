@@ -3,94 +3,52 @@
 //
 import {Plot3D} from './scatterPlot3D.js';
 
-/* Function to create xyz-style axes at origin 
+/* Function to put xyz axes at origin
 
-  Creates xyz-style coordinate axes centered at the origin with axis labels.
-  Most of the options are hard coded or specified by Plot3D.plotOptions
+  Creates xyx-style axes at origin to assist user in navigation.
+  Uses same colors as box axes
+
+  TODO: make this code a little tighter
 */
-export function addOriginAxes(){ 
-	if (Plot3D.plotOptions.colorAxes == 'on') {
-		let xPoints = [
-			new THREE.Vector3(-Plot3D.plotDrawParams.xyzAxesLength.x,0,0), 
-			new THREE.Vector3(Plot3D.plotDrawParams.xyzAxesLength.x,0,0)]
-		let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
-		let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.xAxisColor}));
-		xAxis.name = 'x-axis';
-		xAxis.userData.type = 'axis'
-		Plot3D.scene.add(xAxis)
-		let yPoints = [
-			new THREE.Vector3(0,-Plot3D.plotDrawParams.xyzAxesLength.y,0), 
-			new THREE.Vector3(0,Plot3D.plotDrawParams.xyzAxesLength.y,0)]
-		let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
-		let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.yAxisColor}))
-		yAxis.name = 'y-axis'
-		yAxis.userData.type = 'axis'
-		Plot3D.scene.add(yAxis)
-		let zPoints = [
-				new THREE.Vector3(0,0,-Plot3D.plotDrawParams.xyzAxesLength.z), 
-				new THREE.Vector3(0,0,Plot3D.plotDrawParams.xyzAxesLength.z)]
-		let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
-		let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: Plot3D.plotDrawParams.zAxisColor}))
-		zAxis.name = 'z-axis'
-		zAxis.userData.type = 'axis'
-		Plot3D.scene.add(zAxis)
-	} else {
-		let xPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(Plot3D.plotDrawParams.xyzAxesLength.x*2,0,0)]
-		let xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
-		let xAxis = new THREE.Line(xGeometry, new THREE.LineBasicMaterial({color: 0x808080}));
-		xAxis.name = 'x-axis';
-		xAxis.userData.type = 'axis'
-		Plot3D.scene.add(xAxis)
-		let yPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,Plot3D.plotDrawParams.xyzAxesLength.y*2,0)]
-		let yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
-		let yAxis = new THREE.Line(yGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
-		yAxis.name = 'y-axis'
-		yAxis.userData.type = 'axis'
-		Plot3D.scene.add(yAxis)
-		let zPoints = [new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,Plot3D.plotDrawParams.xyzAxesLength.z*2)]
-		let zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
-		let zAxis = new THREE.Line(zGeometry, new THREE.LineBasicMaterial({color: 0x808080}))
-		zAxis.name = 'z-axis'
-		zAxis.userData.type = 'axis'
-		Plot3D.scene.add(zAxis)
-	}
-	// add axes labels
-	var makeLabel = null;
-	const fontLoader = new THREE.FontLoader();
-	var font = fontLoader.load ('fonts/helvetiker_regular.typeface.json', function ( font ) {
-		makeLabel = function ( labelText ) {
-			return new THREE.TextGeometry( labelText, {
-				font: font,
-				size: 0.75,
-				height: 0.04
-			} );
-		};
-		const axisLabelMaterial = new THREE.MeshBasicMaterial( { color: '#808080', transparent: false } );
-		function addLabel (axis, labelText) {
-			if (makeLabel) {
-				const labelMesh = makeLabel (labelText);
-				labelMesh.computeBoundingBox();
-				const [ ax1, ax2 ] = [ 'x', 'y', 'z' ].filter (x => x !== axis);
-				addAxisLabel ();
-				function addAxisLabel () {
-					const labelObject = new THREE.Mesh (labelMesh, axisLabelMaterial);
-					labelObject.position[axis] = 1
-					labelObject.position[ax1] = 0; 
-					labelObject.position[ax2] = 0; 
-					if (axis === 'y') labelObject.rotation.z = Math.PI/2;
-					if (axis === 'z') labelObject.rotation.y = -Math.PI/2;
-					labelObject.name = labelText;
-					labelObject.userData.type = 'axis label'
-					Plot3D.scene.add (labelObject);
-				}
-			}
-		}
-		addLabel('x',Plot3D.plotOptions.xLabel)
-		addLabel('y',Plot3D.plotOptions.yLabel)
-		addLabel('z',Plot3D.plotOptions.zLabel)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
-	}); // end of fontLoader
-} // end function addOriginAxes
+export function addOriginAxes() {
+	let cylinderHeight = Plot3D.plotDrawParams.boxRange * 0.5
+	let cylinderRadius = Plot3D.plotDrawParams.boxRange * 0.01
+	let coneRadius = Plot3D.plotDrawParams.boxRange * 0.02
+	let coneHeight = Plot3D.plotDrawParams.boxRange * 0.1
+	let cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, cylinderHeight, 32 );
+	let coneGeometry = new THREE.ConeGeometry(coneRadius, coneHeight)
+	let material = new THREE.MeshBasicMaterial( {color: Plot3D.plotDrawParams.xAxisColor} );
+	// x-axis cylinder and cone
+	let cylinder = new THREE.Mesh( cylinderGeometry, material );
+	let cone = new THREE.Mesh(coneGeometry, material)
+	let quaternion = new THREE.Quaternion();
+	quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI/2  );
+	quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), -Math.PI/2  );
+	cylinder.applyQuaternion(quaternion)
+	cone.applyQuaternion(quaternion)
+	cone.position.set(cylinderHeight/2, 0, 0)
+	Plot3D.scene.add( cylinder );
+	Plot3D.scene.add(cone)
+	// y-axis cylinder and cone
+	material = new THREE.MeshBasicMaterial( {color: Plot3D.plotDrawParams.yAxisColor} );
+	cylinder = new THREE.Mesh( cylinderGeometry, material );
+	cone = new THREE.Mesh( coneGeometry, material)
+	cone.position.set(0,cylinderHeight/2, 0)
+	Plot3D.scene.add( cylinder );
+	Plot3D.scene.add(cone);
+	// z-axis cylinder
+	material = new THREE.MeshBasicMaterial( {color: Plot3D.plotDrawParams.zAxisColor} );
+	cylinder = new THREE.Mesh( cylinderGeometry, material );
+	cone = new THREE.Mesh(coneGeometry, material)
+	quaternion = new THREE.Quaternion();
+	quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI/2  );
+	cylinder.applyQuaternion(quaternion)
+	cone.applyQuaternion(quaternion)
+	cone.position.set(0,0,cylinderHeight/2)
+	Plot3D.scene.add( cylinder );
+	Plot3D.scene.add(cone);
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+}
 
 /* Function to put box-style axes centered on origin 
 

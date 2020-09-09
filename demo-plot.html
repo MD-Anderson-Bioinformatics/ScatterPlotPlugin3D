@@ -41,17 +41,16 @@
 						plotTitle: 'Demonstration',
 						legendTitle: 'i am legend',
 						backgroundColor: 'ivory',
-						axesDrawType: 'box'
+						showOriginAxes: true
 					}
 					Plot3D.createPlot(data, plotOptions);
 				function redraw() {
-					let elem = document.getElementById('axesDrawType')
-					plotOptions.axesDrawType = elem.options[elem.selectedIndex].value;
+					let elem = document.getElementById('showOriginAxes')
+					plotOptions.showOriginAxes = elem.options[elem.selectedIndex].value;
 					elem = document.getElementById('x-axis-label')
 					plotOptions.xLabel = elem.options[elem.selectedIndex].value;
 					plotOptions.yLabel = 'Y'
 					plotOptions.zLabel = 'Z'
-					console.log({mar4: 'redraw clicked', plotOptions: plotOptions});
 					Plot3D.createPlot(data, plotOptions);
 				}
 				window.redraw = redraw;
@@ -90,11 +89,9 @@
 		<div id="xyzdiv">
 				<p id="point-name"></p>
 				<p id='show-hover-point-coords'></p>
-		<!--</div>
-		<div>-->
-			<select name='axesDrawType' id='axesDrawType'>
-				<option value='origin'>Origin Axes</option>
-				<option value='box'>Box Axes</option>
+			<select name='showOriginAxes' id='showOriginAxes'>
+				<option value=true>Show Origin Axes</option>
+				<option value=false>Hide Origin Axes</option>
 			</select>
 			<select name='x-axis-label' id='x-axis-label'>
 				<option value='x-axis'>x-axis</option>

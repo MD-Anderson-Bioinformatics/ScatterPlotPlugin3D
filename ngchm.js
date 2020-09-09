@@ -28,10 +28,14 @@ export var VAN = new Vanodi({
 		}
 	],
 	options: [
-		{ label: 'Axes Render Type', type: 'dropdown', choices: [
+		/*{ label: 'Axes Render Type', type: 'dropdown', choices: [
 			{label: 'Box', value: 'box'},
 			{label: 'Origin', value: 'origin'}
-		], helpText: '<u>Box</u>: axes rendered as cube around data.<br><u>Origin</u>: axes rendered as Cartesian xyz at origin'},
+		], helpText: '<u>Box</u>: axes rendered as cube around data.<br><u>Origin</u>: axes rendered as Cartesian xyz at origin'},*/
+		{ label: 'Show Origin Axes', type: 'dropdown', choices: [
+			{label: 'Yes', value: true},
+			{label: 'No', value: false}
+		], helpText: 'Display XYZ axes at origin'},
 		{ label: 'Color Axes', type: 'dropdown', choices: [
 			{label: 'On', value: 'on'},
 			{label: 'Off', value: 'off'}
@@ -65,7 +69,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 		backgroundColor: vanodi.config.options['Background Color'],
 		highlightColor: vanodi.config.options['Highlight Color'],
 		pointSize: vanodi.config.options['Point Size'],
-		axesDrawType: vanodi.config.options['Axes Render Type'],
+		showOriginAxes: vanodi.config.options['Show Origin Axes'],
 		colorAxes: vanodi.config.options['Color Axes']
 	}
 	// organize data to plot
