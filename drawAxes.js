@@ -34,7 +34,7 @@ export function addOriginAxes(){
 		makeLabel = function ( labelText ) {
 			return new THREE.TextGeometry( labelText, {
 				font: font,
-				size: 1,
+				size: 0.75,
 				height: 0.04
 			} );
 		};
@@ -98,7 +98,7 @@ export function addBoxAxes() {
 		makeLabel = function ( labelText ) {
 			return new THREE.TextGeometry( labelText, {
 				font: font,
-				size: 1,
+				size: 0.75,
 				height: 0.04
 			} );
 		}; // end function makeLabel

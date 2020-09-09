@@ -117,7 +117,7 @@ export class PickHelper {
 	showXYZ(coordinates) {
 		let xyzCoords = document.getElementById('show-hover-point-coords')
 		if (xyzCoords) {
-			xyzCoords.innerHTML = coordinates.x + ', ' + coordinates.y + ', ' + coordinates.z
+			xyzCoords.innerHTML = coordinates.x.toFixed(2) + ', ' + coordinates.y.toFixed(2) + ', ' + coordinates.z.toFixed(2)
 		}
 	}
 
