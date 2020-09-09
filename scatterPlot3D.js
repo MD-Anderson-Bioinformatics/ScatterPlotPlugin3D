@@ -52,8 +52,9 @@ function initializePlotOptions(plotOptions) {
 */
 function initializePlotDrawParams() {
 	let geo  = {}
-	geo.xyzAxesLength = {x: 5, y: 5, z: 5}
-	geo.boxRange = 5
+	let len = 9;
+	geo.xyzAxesLength = {x: len, y: len, z: len}
+	geo.boxRange = len 
 	return geo
 }
 
@@ -143,6 +144,21 @@ function initializeScene() {
 	}
 }
 
+function createScales(dataPoints) {
+	let max = {x: 0, y: 0, z: 0}
+	dataPoints.forEach(pt => {
+		if (Math.abs(pt.x) > max.x) { max.x = Math.abs(pt.x) }
+		if (Math.abs(pt.y) > max.y) { max.y = Math.abs(pt.y) }
+		if (Math.abs(pt.z) > max.z) { max.z = Math.abs(pt.z) }
+	})
+	let scale = {
+		x: Plot3D.plotDrawParams.xyzAxesLength.x/max.x,
+		y: Plot3D.plotDrawParams.xyzAxesLength.y/max.y,
+		z: Plot3D.plotDrawParams.xyzAxesLength.z/max.z
+	}
+	return scale
+}
+
 /* Main function to create 3-d scatter plot. Exported 
 
   Inputs:
@@ -157,16 +173,10 @@ function createPlot(data, _plotOptions) {
 	const pickHelper = new PickHelper(Plot3D.plotOptions)
 	let dataPoints = organizeData(data)
 	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
-	let max = {x: 0, y: 0, z: 0}
-	dataPoints.forEach(pt => {
-		if (Math.abs(pt.x) > max.x) { max.x = Math.abs(pt.x) }
-		if (Math.abs(pt.y) > max.y) { max.y = Math.abs(pt.y) }
-		if (Math.abs(pt.z) > max.z) { max.z = Math.abs(pt.z) }
-	})
-	let sX = Plot3D.plotDrawParams.xyzAxesLength.x/max.x, sY = Plot3D.plotDrawParams.xyzAxesLength.y/max.y, sZ = Plot3D.plotDrawParams.xyzAxesLength.z/max.z;
+	let scale = createScales(dataPoints);
 	dataPoints.forEach(pt => {
 		let ptObject = new THREE.Mesh(Plot3D.geometriesMaterials.dataPoints.geometry, Plot3D.geometriesMaterials.dataPoints.groupMaterials[pt.color])
-		ptObject.position.set(pt.x*sX, pt.y*sY, pt.z*sZ)
+		ptObject.position.set(pt.x*scale.x, pt.y*scale.y, pt.z*scale.z)
 		ptObject.name = pt.id; 
 		ptObject.userData.type = 'data point'
 		ptObject.userData.id = pt.id
