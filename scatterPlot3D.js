@@ -1,18 +1,29 @@
 //
 // Initial ideas for using threejs for 3d scatter plot
 //
-import {VAN} from './ngchm.js';
-import {PickHelper} from './pickHelper.js';
-import {addBoxAxes, addOriginAxes} from './drawAxes.js';
+import {VAN} from './interface_js/ngchm.js';
+import {PickHelper} from './js/pickHelper.js';
+import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
+import {SelectPoints} from './js/selections.js';
 
 /* Expored Plot3D object containes the function listed here,
    and a few other parameters (e.g. scene, camera, renderer)
 */
 export const Plot3D = {
 	createPlot
+	/*getCanvasRelativePosition*/
 };
 
 Plot3D.selectedPointIds = []
+	
+
+function getCanvasRelativePosition(event) {
+	const rect = Plot3D.mainCanvas.getBoundingClientRect();
+	return {
+		x: (event.clientX - rect.left) * Plot3D.mainCanvas.width / rect.width,
+		y: (event.clientY - rect.top) * Plot3D.mainCanvas.height / rect.height,
+	};
+}
 
 /* Function to initialize input plot options
 
@@ -138,24 +149,24 @@ function clearScene() {
 function initializeScene() {
 	Plot3D.scene = new THREE.Scene()
 	Plot3D.scene.background = new THREE.Color(Plot3D.plotOptions.backgroundColor)
+	Plot3D.mainCanvas = document.getElementById('main-plot')
 	let fov = 60; // 50 is default
-	let aspect = 1; // window.innerWidth / window.innerHeight;
+	let aspect = window.innerWidth / window.innerHeight;
 	let near = 0.1
 	let far = 200; // was 1000
 	Plot3D.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-	Plot3D.mainCanvas = document.getElementById('main-plot')
 	Plot3D.renderer = new THREE.WebGLRenderer({
 		canvas: Plot3D.mainCanvas
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(Plot3D.renderer.domElement);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
-	Plot3D.controls.keys = {
+	Plot3D.controls.enabled = false
+	/*Plot3D.controls.keys = {
 		LEFT: 76,
 		UP: 85,
 		RIGHT: 82,
 		BOTTOM: 66
-	}
+	}*/
 }
 
 function createScales(dataPoints) {
@@ -181,6 +192,7 @@ function createScales(dataPoints) {
     _plotOptions object of user plot options (e.g. from gear menu)
 */
 function createPlot(data, _plotOptions) {
+	Plot3D.mode = 'select'
 	clearScene();
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
@@ -207,13 +219,7 @@ function createPlot(data, _plotOptions) {
 
 	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse
 
-	function getCanvasRelativePosition(event) {
-		const rect = Plot3D.mainCanvas.getBoundingClientRect();
-		return {
-			x: (event.clientX - rect.left) * Plot3D.mainCanvas.width / rect.width,
-			y: (event.clientY - rect.top) * Plot3D.mainCanvas.height / rect.height,
-		};
-	}
+
 
 	/* function to get position of mouse for picking points */
 	function findPointUnderMouse(event) {
@@ -236,7 +242,18 @@ function createPlot(data, _plotOptions) {
 	window.addEventListener('mousemove',findPointUnderMouse)
 	window.addEventListener('mouseout', clearMousePointerPosition);
 	window.addEventListener('mouseleave', clearMousePointerPosition);
-
+	window.addEventListener('keydown', event => {
+		let key = event.key || event.keyCode;
+		if (key != 's') {return}
+		if (Plot3D.mode == 'orbit') { 
+			Plot3D.mode = 'select'
+			Plot3D.controls.enabled = false
+		} else {
+			Plot3D.mode = 'orbit'
+			Plot3D.controls.enabled = true
+		}
+	})
+	SelectPoints.initSelect();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */

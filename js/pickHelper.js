@@ -1,5 +1,5 @@
-import {Plot3D} from './scatterPlot3D.js';
-import {VAN} from './ngchm.js';
+import {Plot3D} from '../scatterPlot3D.js';
+import {VAN} from '../interface_js/ngchm.js';
 
 
 var lastPostedPointIds = []
