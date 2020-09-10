@@ -60,9 +60,15 @@ function initializePlotDrawParams() {
 	let len = 9;
 	geo.xyzAxesLength = {x: len, y: len, z: len} // for axes at origin
 	geo.boxRange = len  // for box axes
-	geo.xAxisColor = '#347aeb' 
-	geo.yAxisColor =  '#eb347d'
-	geo.zAxisColor =  '#46b533'
+	if (Plot3D.plotOptions.colorAxes == 'on') {
+		geo.xAxisColor = '#347aeb' 
+		geo.yAxisColor = '#eb347d'
+		geo.zAxisColor = '#46b533'
+	} else {
+		geo.xAxisColor = '#737373'
+		geo.yAxisColor = '#737373'
+		geo.zAxisColor = '#737373'
+	}
 	return geo
 }
 
@@ -94,7 +100,7 @@ function createGeometriesAndMaterials(groupColors) {
 	gm.highlights.material = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
 	gm.selection = {}
 	gm.selection.geometry = new THREE.SphereGeometry(Plot3D.plotOptions.pointSize*2, 10, 10)
-	gm.selection.material = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
+	gm.selection.material = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.75})
 	return gm
 }
 
