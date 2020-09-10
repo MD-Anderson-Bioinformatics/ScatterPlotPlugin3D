@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>threejs</title>
+		<meta charset='utf-8'/>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+			h1, p, a { font-family: Helvetica; }
+			#point-name {
+				width: 100%;
+				height: 12px;
+				text-align: right;
+			}
+			#show-hover-point-coords{
+				width: 100%;
+				height: 12px;
+				text-align: right;
+			}
+			#xyzdiv {
+				padding-right: 20px;
+				margin-right: 20px;
+			}
+		</style>
+		<script src="js/three.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="demo_data/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
+		<script type="module" src="scatterPlot3D.js"></script>
+		<script type="module" src="selections.js"></script>
+		<script src="resources/threex.rendererstats.js"></script>
+		<script type='module'>
+			import {Plot3D} from './scatterPlot3D.js';
+			import {SelectPoints} from './selections.js';
+			document.addEventListener("DOMContentLoaded", function(event) {
+				d3.tsv('demo_data/data.tsv').then(function(data) {
+					const plotOptions = {
+						pointSize: 0.1,
+						xLabel: 'x-axis',
+						yLabel: 'y-axis',
+						zLabel: 'z-axis',
+						plotTitle: 'Demonstration',
+						legendTitle: 'i am legend',
+						backgroundColor: 'ivory',
+						showOriginAxes: true
+					}
+					Plot3D.createPlot(data, plotOptions);
+				function redraw() {
+					let elem = document.getElementById('showOriginAxes')
+					plotOptions.showOriginAxes = elem.options[elem.selectedIndex].value;
+					elem = document.getElementById('x-axis-label')
+					plotOptions.xLabel = elem.options[elem.selectedIndex].value;
+					plotOptions.yLabel = 'Y'
+					plotOptions.zLabel = 'Z'
+					Plot3D.createPlot(data, plotOptions);
+				}
+				window.redraw = redraw;
+				})
+				function addSpheres() {
+					let pointsList = ['Sitdolorevelit.-7','Sitdolorevelit.-2']
+					SelectPoints.selectPoints(pointsList);
+				}
+				window.addSpheres = addSpheres;
+				function removeSpheres() {
+					SelectPoints.clearSelectedPoints();
+				}
+				window.removeSpheres = removeSpheres;
+			})
+			// Just here for debugging
+			// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
+			var rendererStats  = new THREEx.RendererStats()
+			rendererStats.domElement.style.position   = 'absolute'
+			rendererStats.domElement.style.left  = '0px'
+			rendererStats.domElement.style.bottom    = '0px'
+			document.body.appendChild( rendererStats.domElement )
+			/* marohrdanz: for the demo-only, animate every frame
+			          (for the main index.html page, only rendering when things change)*/
+			var animate = function() {
+				window.animationID = requestAnimationFrame(animate);
+				if (Plot3D.controls) Plot3D.controls.update()
+				if (Plot3D.camera) {
+					Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
+				}
+				rendererStats.update(Plot3D.renderer);
+			}
+			animate()
+		</script>
+	</head>
+	<body>
+		<div id="xyzdiv">
+				<p id="point-name"></p>
+				<p id='show-hover-point-coords'></p>
+			<select name='showOriginAxes' id='showOriginAxes'>
+				<option value=true>Show Origin Axes</option>
+				<option value=false>Hide Origin Axes</option>
+			</select>
+			<select name='x-axis-label' id='x-axis-label'>
+				<option value='x-axis'>x-axis</option>
+				<option value='X-AXIS'>X-AXIS</option>
+				<option value='X'>X</option>
+			</select>
+			<button onclick="redraw()">Redraw</button>
+			<button onclick="addSpheres()">Add Spheres</button>
+			<button onclick="removeSpheres()">Remove Spheres</button>
+		</div>
+		<canvas id='main-plot'></canvas>
+	</body>
+
+</html>

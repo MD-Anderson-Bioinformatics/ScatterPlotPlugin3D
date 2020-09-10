@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>My first three.js app</title>
+		<title>ScatterPlot3DPlugin</title>
+		<meta charset='utf-8'/>
 		<style>
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
+			p { font-family: Helvetica; }
+			#point-name {
+				width: 100%;
+				height: 12px;
+				text-align: right;
+				font-size: 16px;
+				font-weight: bold;
+			}
+			#show-hover-point-coords{
+				width: 100%;
+				height: 12px;
+				text-align: right;
+				font-size: 14px;
+			}
+			#xyzdiv {
+				padding-right: 20px;
+				margin-right: 20px;
+			}
 		</style>
 		<script src="js/three.min.js"></script>
 		<script src="js/OrbitControls.js"></script>
-		<script src="js/vanodi.js"></script>
-		<script src="plot3d.js"></script>
-		<script src="scatter3d.js"></script>
+		<script type="module" src="js/vanodi.js"></script>
+		<script type="module" src="scatterPlot3D.js"></script>
+		<script type="module" src="ngchm.js"></script>
 	</head>
 	<body>
-		<script>
-		</script>
+		<div>
+			<div id='xyzdiv'><p id="point-name"></p><p id='show-hover-point-coords'></p></div>
+			<canvas id="main-plot"></canvas>
+		</div>
 	</body>
 </html>
