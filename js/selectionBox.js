@@ -37,6 +37,7 @@ export function initDragToSelect() {
 			allSelected.forEach(pt => {
 				let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
 				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
+				sphere.userData.type = 'selection sphere'
 				Plot3D.scene.add(sphere)
 				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 			})
@@ -139,7 +140,7 @@ class SelectionBox {
 	}
 
 	searchChildInFrustum(frustum, object) {
-		if (object.isMesh ) {
+		if (object.userData.type == 'data point') {
 			if (frustum.containsPoint(object.position)) {
 				this.collection.push(object)
 			}
