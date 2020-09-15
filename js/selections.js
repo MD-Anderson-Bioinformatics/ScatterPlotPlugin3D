@@ -12,6 +12,7 @@ export const SelectPoints = {
 
 function clearSelectedPointIds() {
 	Plot3D.selectedPointIds = []
+	clearSelectedPoints();
 }
 
 /* Prototype function to select an object based on a userData property

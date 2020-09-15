@@ -124,13 +124,13 @@ class PickHelper {
 	*/
 	postSelectLabels(points, clickType) {
 		if (arraysEqual(points, lastPostedPointIds)) {return} 
-		let hiLiteInfo = {}
-		hiLiteInfo.axis = 'column' // fix to be NOT hard-coded
-		hiLiteInfo.pointIds = points
-		hiLiteInfo.clickType = clickType
 		VAN.postMessage({
 			op: 'selectLabels',
-			selection: hiLiteInfo
+			selection: {
+				axis: 'column',
+				pointIds: points,
+				clickType: clickType
+			}
 		})
 		lastPostedPointIds = points;
 	}
