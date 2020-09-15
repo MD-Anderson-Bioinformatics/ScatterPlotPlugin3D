@@ -2,27 +2,39 @@
 // Initial ideas for using threejs for 3d scatter plot
 //
 import {VAN} from './interface_js/ngchm.js';
-import {PickHelper} from './js/pickHelper.js';
+import {HoverHelper} from './js/hoverHelper.js';
 import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
-import {SelectPoints} from './js/selections.js';
+import {initDragToSelect} from './js/selectionBox.js';
+
 
 /* Expored Plot3D object containes the function listed here,
    and a few other parameters (e.g. scene, camera, renderer)
 */
 export const Plot3D = {
-	createPlot
-	/*getCanvasRelativePosition*/
+	createPlot,
+	getMouseXYZ
 };
 
 Plot3D.selectedPointIds = []
-	
 
-function getCanvasRelativePosition(event) {
+/* Exported function to return mouse XYZ coordinates in the scene
+
+	Inputs:
+		event {event} mouse event
+	Output:
+		{object} xyz coordiantes of mouse in scene
+*/
+function getMouseXYZ(event) {
 	const rect = Plot3D.mainCanvas.getBoundingClientRect();
-	return {
+	let relativePosition = {
 		x: (event.clientX - rect.left) * Plot3D.mainCanvas.width / rect.width,
 		y: (event.clientY - rect.top) * Plot3D.mainCanvas.height / rect.height,
 	};
+	return {
+		x: (relativePosition.x / Plot3D.mainCanvas.width) * 2 - 1,
+		y: (relativePosition.y / Plot3D.mainCanvas.height) * -2 + 1,
+		z: 0.5
+	}
 }
 
 /* Function to initialize input plot options
@@ -197,7 +209,7 @@ function createPlot(data, _plotOptions) {
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
 	initializeScene();
-	const pickHelper = new PickHelper(Plot3D.plotOptions)
+
 	let dataPoints = organizeData(data)
 	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
 	let scale = createScales(dataPoints);
@@ -217,32 +229,7 @@ function createPlot(data, _plotOptions) {
 	}
 	Plot3D.camera.position.z = 30; // was 25
 
-	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse
-
-
-
-	/* function to get position of mouse for picking points */
-	function findPointUnderMouse(event) {
-		pickHelper.clearHighlightedPoints()
-		const pos = getCanvasRelativePosition(event)
-		pickPosition.x = (pos.x / Plot3D.mainCanvas.width) * 2 - 1;
-		pickPosition.y = (pos.y / Plot3D.mainCanvas.height) * -2 + 1;
-		pickHelper.pick(pickPosition)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
-	}
-
-	/* function to clear mouse position for selecting points */
-	function clearMousePointerPosition() {
-		pickPosition.x = -100000;
-		pickPosition.y = -100000;
-		pickHelper.clearHighlightedPoints()
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
-	}
-
-	window.addEventListener('mousemove',findPointUnderMouse)
-	window.addEventListener('mouseout', clearMousePointerPosition);
-	window.addEventListener('mouseleave', clearMousePointerPosition);
-	window.addEventListener('keydown', event => {
+	document.addEventListener('keydown', event => {
 		let key = event.key || event.keyCode;
 		if (key != 's') {return}
 		if (Plot3D.mode == 'orbit') { 
@@ -253,7 +240,8 @@ function createPlot(data, _plotOptions) {
 			Plot3D.controls.enabled = true
 		}
 	})
-	SelectPoints.initSelect();
+	initDragToSelect();
+	HoverHelper.initHoverToHighlight();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */

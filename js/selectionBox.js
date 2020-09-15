@@ -1,16 +1,66 @@
 import {Plot3D} from '../scatterPlot3D.js'
 
+
 /*
-	Main class (SelectionBox) and helper class (SelecionHelper) for finding
+	This module contains code for selecting points by dragging the mouse
+
+	Exported function initDragToSelect initializes the code for allowing
+	the user to drag the mouse across the scene to select points
+
+	Two classes: SelectionBox and SelecionHelper are for finding
 	points when user drags a rectanglge accross the scene. Inspired by
 	https://threejs.org/examples/misc_boxselection.html
 */
+
+
+/*
+	Exported function to initialize the 'drag to select'
+*/
+export function initDragToSelect() {
+	let selectionBox = new SelectionBox(Plot3D.camera, Plot3D.scene);
+	let helper = new SelectionHelper(Plot3D.renderer)
+	/* drag start */
+	document.addEventListener('mousedown', function(event) {
+		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		helper.element.hidden = false;
+		let pos = Plot3D.getMouseXYZ(event)
+		selectionBox.startPoint.set(pos.x, pos.y, pos.z)
+	})
+	/* during drag */
+	document.addEventListener('mousemove', function(event) {
+		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		helper.element.hidden = false;
+		if (helper.isDown) {
+			let pos = Plot3D.getMouseXYZ(event)
+			selectionBox.endPoint.set(pos.x, pos.y, pos.z)
+			var allSelected = selectionBox.select()
+			allSelected.forEach(pt => {
+				let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
+				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
+				Plot3D.scene.add(sphere)
+				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+			})
+		}
+	})
+	/* drag end */
+	document.addEventListener('mouseup', function(event) {
+		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		helper.element.hidden = false;
+		let pos = Plot3D.getMouseXYZ(event)
+		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
+		var allSelected = selectionBox.select()
+	})
+} // end function initDragToSelect
+
+
+
+
 
 /*
 	Class to check of objects are in a selection area in three3 space
 */
 
-export class SelectionBox {
+class SelectionBox {
 	constructor(camera, scene) {
 		this.camera = camera;
 		this.scene = scene;
@@ -100,9 +150,9 @@ export class SelectionBox {
 			})
 		}
 	}
-} // end exported class SelectionBox
+} // end class SelectionBox
 
-export class SelectionHelper {
+class SelectionHelper {
 	constructor(renderer) {
 		this.element = document.createElement('div')
 		this.element.classList.add('selectBox')
@@ -138,4 +188,4 @@ export class SelectionHelper {
 			this.element.parentElement.removeChild(this.element)
 		})
 	}
-} // end exported class Selection Helper
+} // end class Selection Helper

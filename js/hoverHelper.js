@@ -1,6 +1,14 @@
 import {Plot3D} from '../scatterPlot3D.js';
 import {VAN} from '../interface_js/ngchm.js';
 
+/*
+	This module contains code for highlighting points when the mouse
+	hovers over them.
+*/
+
+export const HoverHelper = {
+	initHoverToHighlight
+}
 
 var lastPostedPointIds = []
 
@@ -15,11 +23,41 @@ function arraysEqual(a, b) {
 	return true;
 }
 
+/*
+	Exported function to initialize highlighting data points on mouse hover
+*/
+function initHoverToHighlight() {
+	const pickHelper = new PickHelper(Plot3D.plotOptions)
+	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse to highlight on hover
+
+	/* function to get position of mouse for picking points */
+	function findPointUnderMouse(event) {
+		pickHelper.clearHighlightedPoints()
+		const pos = Plot3D.getMouseXYZ(event)
+		pickPosition.x = pos.x 
+		pickPosition.y = pos.y 
+		pickHelper.pick(pickPosition)
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	}
+
+	/* function to clear mouse position for selecting points */
+	function clearMousePointerPosition() {
+		pickPosition.x = -100000;
+		pickPosition.y = -100000;
+		pickHelper.clearHighlightedPoints()
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	}
+
+	document.addEventListener('mousemove',findPointUnderMouse)
+	document.addEventListener('mouseout', clearMousePointerPosition);
+	document.addEventListener('mouseleave', clearMousePointerPosition);
+}
+
 /* Class PickHelper for highlighting points under mouse
 
    Inspired by https://threejsfundamentals.org/threejs/lessons/threejs-picking.html
 */
-export class PickHelper {
+class PickHelper {
 	constructor(plotOptions) {
 		this.raycaster = new THREE.Raycaster();
 		this.pickedObject = null;
