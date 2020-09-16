@@ -51,16 +51,16 @@ p,h1,a {
 	margin-right: 10px;
 	padding: 2px;
 	color: #0D4F8B;
-	height: 20px;
+	height: 24px;
 }
 
 .icon:hover {
 	cursor: pointer;
-	height: 24px;
+	height: 28px;
 }
 
 .selected-icon { /* when in a given mode, highlight corresponding button icon */
 	border: solid #0D4F8B 1px;
-	height: 24px !important;
+	height: 28px !important;
 }
 
