@@ -161,7 +161,7 @@ function clearScene() {
 function initializeScene() {
 	Plot3D.scene = new THREE.Scene()
 	Plot3D.scene.background = new THREE.Color(Plot3D.plotOptions.backgroundColor)
-	Plot3D.mainCanvas = document.getElementById('main-plot')
+	Plot3D.mainCanvas = document.getElementById('scatter-plot-3d-canvas')
 	let fov = 60; // 50 is default
 	let aspect = window.innerWidth / window.innerHeight;
 	let near = 0.1
@@ -172,13 +172,6 @@ function initializeScene() {
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
-	Plot3D.controls.enabled = false
-	/*Plot3D.controls.keys = {
-		LEFT: 76,
-		UP: 85,
-		RIGHT: 82,
-		BOTTOM: 66
-	}*/
 }
 
 function createScales(dataPoints) {
@@ -197,6 +190,14 @@ function createScales(dataPoints) {
 	return scale
 }
 
+/* redraw the plot with appropriate aspect ratio on window resize */
+window.addEventListener('resize', () => {
+	Plot3D.camera.aspect = window.innerWidth / window.innerHeight;
+	Plot3D.camera.updateProjectionMatrix();
+	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+}, false)
+
 /* Main function to create 3-d scatter plot. Exported 
 
   Inputs:
@@ -204,7 +205,6 @@ function createScales(dataPoints) {
     _plotOptions object of user plot options (e.g. from gear menu)
 */
 function createPlot(data, _plotOptions) {
-	Plot3D.mode = 'select'
 	clearScene();
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
@@ -229,6 +229,20 @@ function createPlot(data, _plotOptions) {
 	}
 	Plot3D.camera.position.z = 30; // was 25
 
+	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
+	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
+		event.target.classList.add('selected-icon')
+		document.getElementById('drag-to-select-icon').classList.remove('selected-icon')
+		Plot3D.mode = 'orbit'
+		Plot3D.controls.enabled = true
+	})
+	document.getElementById('drag-to-select-icon').addEventListener('click', (event) => {
+		event.target.classList.add('selected-icon')
+		document.getElementById('orbit-controls-icon').classList.remove('selected-icon')
+		Plot3D.mode = 'select'
+		Plot3D.controls.enabled = false
+	})
+	/* toggle between modes when user clicks 's' key */
 	document.addEventListener('keydown', event => {
 		let key = event.key || event.keyCode;
 		if (key != 's') {return}
@@ -240,6 +254,10 @@ function createPlot(data, _plotOptions) {
 			Plot3D.controls.enabled = true
 		}
 	})
+	document.getElementById('orbit-controls-icon').style.visibility = 'visible'
+	document.getElementById('drag-to-select-icon').style.visibility = 'visible'
+	document.getElementById('orbit-controls-icon').click()
+	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
 	initDragToSelect();
 	HoverHelper.initHoverToHighlight();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);

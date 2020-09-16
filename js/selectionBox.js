@@ -20,7 +20,7 @@ export function initDragToSelect() {
 	let selectionBox = new SelectionBox(Plot3D.camera, Plot3D.scene);
 	let helper = new SelectionHelper(Plot3D.renderer)
 	/* drag start */
-	document.addEventListener('mousedown', function(event) {
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mousedown', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		clearSelectedSpheres()
 		helper.element.hidden = false;
@@ -28,7 +28,7 @@ export function initDragToSelect() {
 		selectionBox.startPoint.set(pos.x, pos.y, pos.z)
 	})
 	/* during drag */
-	document.addEventListener('mousemove', function(event) {
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mousemove', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		helper.element.hidden = false;
 		if (helper.isDown) {
@@ -45,7 +45,7 @@ export function initDragToSelect() {
 		}
 	})
 	/* drag end */
-	document.addEventListener('mouseup', function(event) {
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseup', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)

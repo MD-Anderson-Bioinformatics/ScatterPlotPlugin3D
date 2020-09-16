@@ -2,35 +2,65 @@
 body { 
 	margin: 0; 
 }
-canvas { 
-	width: 100%; 
-	height: 100% 
-}
+
 p,h1,a { 
 	font-family: Helvetica; 
 }
+
+#scatter-plot-3d-canvas { 
+	margin-left: 5%;
+	margin-right: 5%;
+	width: 90% !important ;
+	height: 90% !important ;
+	border: 1px solid grey;
+}
+
+#icons-div {
+	width: 50%;
+	float: left;
+}
+
+#name-coords-div {
+	margin-left: 50%;
+	padding-right: 20px;
+	margin-right: 20px;
+}
+
 #point-name {
-	width: 100%;
-	height: 12px;
+	height: 16px;
 	text-align: right;
 	font-size: 16px;
 	font-weight: bold;
 }
 #show-hover-point-coords{
-	width: 100%;
-	height: 12px;
+	height: 16px;
 	text-align: right;
 	font-size: 14px;
 }
-#xyzdiv {
-	padding-right: 20px;
-	margin-right: 20px;
-}
 
-
+/* selection box helper 
+  (displayed as user drags mouse to select points) */
 .selectBox {
 	border: 1px solid #55aaff;
 	background-color: rgba:(75, 160, 225, 0.3);
 	position: fixed;
+}
+
+/* icons for zoom/pan, lasso, reset */
+.icon {
+	margin-right: 10px;
+	padding: 2px;
+	color: #0D4F8B;
+	height: 20px;
+}
+
+.icon:hover {
+	cursor: pointer;
+	height: 24px;
+}
+
+.selected-icon { /* when in a given mode, highlight corresponding button icon */
+	border: solid #0D4F8B 1px;
+	height: 24px !important;
 }
 
