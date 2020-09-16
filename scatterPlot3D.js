@@ -246,12 +246,16 @@ function createPlot(data, _plotOptions) {
 	document.addEventListener('keydown', event => {
 		let key = event.key || event.keyCode;
 		if (key != 's') {return}
-		if (Plot3D.mode == 'orbit') { 
+		if (Plot3D.mode == 'orbit') {
 			Plot3D.mode = 'select'
 			Plot3D.controls.enabled = false
+			document.getElementById('drag-to-select-icon').classList.add('selected-icon')
+			document.getElementById('orbit-controls-icon').classList.remove('selected-icon')
 		} else {
 			Plot3D.mode = 'orbit'
 			Plot3D.controls.enabled = true
+			document.getElementById('drag-to-select-icon').classList.remove('selected-icon')
+			document.getElementById('orbit-controls-icon').classList.add('selected-icon')
 		}
 	})
 	document.getElementById('orbit-controls-icon').style.visibility = 'visible'
