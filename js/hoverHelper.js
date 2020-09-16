@@ -32,6 +32,7 @@ function initHoverToHighlight() {
 
 	/* function to get position of mouse for picking points */
 	function findPointUnderMouse(event) {
+		if (Plot3D.disableHoverHighlight) {return}
 		pickHelper.clearHighlightedPoints()
 		const pos = Plot3D.getMouseXYZ(event)
 		pickPosition.x = pos.x 
@@ -67,7 +68,7 @@ class PickHelper {
 		this.highlightMaterial = new THREE.MeshBasicMaterial({color: Plot3D.plotOptions.highlightColor, transparent: true, opacity: 0.5})
 		this.hlObject = new THREE.Mesh(this.highlightGeo, this.highlightMaterial)
 		this.hlObject.visible = false
-		this.hlObject.name = 'highlight initial'
+		this.hlObject.userData.name = 'hover highlight sphere'
 		Plot3D.scene.add(this.hlObject)
 	}
 	/* Function to find data point under mouse

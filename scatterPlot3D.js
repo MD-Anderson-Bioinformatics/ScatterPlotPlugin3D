@@ -273,9 +273,12 @@ function createPlot(data, _plotOptions) {
 	/* Hide the point name/coords div when user is rotating/zooming */
 	Plot3D.controls.addEventListener('start', () => {
 		document.getElementById('name-coords-div').style.visibility = 'hidden';
+		Plot3D.disableHoverHighlight = true;
+		Plot3D.scene.getObjectByUserDataProperty('name','hover highlight sphere').visible = false
 	})
 	Plot3D.controls.addEventListener('end', () => {
 		document.getElementById('name-coords-div').style.visibility = 'visible';
+		Plot3D.disableHoverHighlight = false;
 	})
 } // end exported function createPlot
 
