@@ -270,5 +270,12 @@ function createPlot(data, _plotOptions) {
 	Plot3D.controls.addEventListener( 'change', () => { 
 		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
 	});
+	/* Hide the point name/coords div when user is rotating/zooming */
+	Plot3D.controls.addEventListener('start', () => {
+		document.getElementById('name-coords-div').style.visibility = 'hidden';
+	})
+	Plot3D.controls.addEventListener('end', () => {
+		document.getElementById('name-coords-div').style.visibility = 'visible';
+	})
 } // end exported function createPlot
 
