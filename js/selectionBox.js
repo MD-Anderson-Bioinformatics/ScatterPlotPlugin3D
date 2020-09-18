@@ -147,14 +147,15 @@ class SelectionBox {
 		planes[ 4 ].setFromCoplanarPoints( vecTopRight, vecDownRight, vecDownLeft );
 		planes[ 5 ].setFromCoplanarPoints( vectemp3, vectemp2, vectemp1 );
 		planes[ 5 ].normal.multiplyScalar( - 1 );
-		// add some rubbish to scene for help in debuggins...
+		// add helper vectors to scene for help debugging drag-to-select
 		/*let material = new THREE.LineBasicMaterial({color: 'green'})
 		let geometry = new THREE.Geometry()
 		geometry.vertices.push(vecTopLeft)
 		geometry.vertices.push(vecTopRight)
+		geometry.vertices.push(vecDownRight)
 		Plot3D.scene.add(new THREE.Line(geometry,material))
 		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)*/
-		// end add some rubbish to scene
+		// end some helper vectors for debugging
 	}
 
 	searchChildInFrustum(frustum, object) {

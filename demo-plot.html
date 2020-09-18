@@ -24,33 +24,22 @@
 						plotTitle: 'Demonstration',
 						legendTitle: 'i am legend',
 						backgroundColor: 'ivory',
-						showOriginAxes: true
+						showOriginAxes: 'true'
 					}
-					Plot3D.createPlot(data, plotOptions);
+					Plot3D.createPlot(data.slice(0,300), plotOptions);
 					function redraw() {
-						let elem = document.getElementById('showOriginAxes')
-						plotOptions.showOriginAxes = elem.options[elem.selectedIndex].value;
-						elem = document.getElementById('x-axis-label')
-						plotOptions.xLabel = elem.options[elem.selectedIndex].value;
+						plotOptions.showOriginAxes = 'false'
+						plotOptions.colorAxes = 'off'
 						plotOptions.yLabel = 'Y'
 						plotOptions.zLabel = 'Z'
-						Plot3D.createPlot(data, plotOptions);
+						Plot3D.createPlot(data.slice(400,500), plotOptions);
 					}
 					window.redraw = redraw;
-					})
-				function addSpheres() {
-					let pointsList = ['Sitdolorevelit.-7','Sitdolorevelit.-2']
-					SelectPoints.selectPoints(pointsList);
-				}
-				window.addSpheres = addSpheres;
-				function removeSpheres() {
-					SelectPoints.clearSelectedPoints();
-				}
-				window.removeSpheres = removeSpheres;
+				})
 			})
 			// using the stats module from https://threejs.org/examples/misc_boxselection.html
-			var stats = new Stats()
-			document.body.appendChild(stats.dom)
+			//var stats = new Stats()
+			//document.body.appendChild(stats.dom)
 			// Just here for debugging
 			// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
 			var rendererStats  = new THREEx.RendererStats()
@@ -66,16 +55,17 @@
 				if (Plot3D.camera) {
 					Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
 				}
-				rendererStats.update(Plot3D.renderer);
-				stats.update()
+				//rendererStats.update(Plot3D.renderer);
+				//stats.update()
 			}
-			animate()
+			//animate()
 		</script>
 	</head>
 	<body>
 		<div id="icons-div">
 			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon' style='visibility:hidden;'>
 			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon' style='visibility:hidden;'>
+			<button type='button' onclick='redraw()'>Click Me</button>
 		</div>
 		<div id='name-coords-div'>
 				<p id='point-name'></p>

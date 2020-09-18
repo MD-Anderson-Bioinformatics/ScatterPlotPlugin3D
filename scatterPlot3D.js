@@ -147,10 +147,23 @@ function organizeData(data) {
 
 /* Function to clear scene */
 function clearScene() {
+	if (Plot3D.hasOwnProperty('scene')) {
+		while (Plot3D.scene.children.length > 0) {
+			Plot3D.scene.remove(Plot3D.scene.children[0])
+		}
+	}
 	Plot3D.scene = null;
 	Plot3D.camera = null;
 	Plot3D.controls = null; 
 	Plot3D.renderer = null;
+	if (Plot3D.geometriesMaterials) {
+		for (const [key,value] of Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+			value.dispose()
+		}
+		for (const [key,value] of Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+			value.dispose()
+		}
+	}
 }
 
 /* Function to create initial scene 
