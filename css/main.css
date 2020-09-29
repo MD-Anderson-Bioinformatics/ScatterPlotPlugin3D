@@ -64,3 +64,24 @@ p,h1,a {
 	height: 28px !important;
 }
 
+/* tooltip for 'buttons' (orbit mode, select mode) */
+#orbit-controls-icon:hover + #orbit-controls-tooltip {
+	display: block;
+}
+#drag-to-select-icon:hover + #drag-to-select-tooltip {
+	display: block;
+}
+.button-tooltip {
+	display: none;
+	background: #F0F8FF;
+	border: solid 1px gray;
+	margin-left: 28px;
+	padding:10px;
+	position: absolute;
+	z-index: 1000;
+	width: 200px;
+	height: auto;
+	font-family: Arial;
+}
+/* end toolitp for 'buttons' */
+
