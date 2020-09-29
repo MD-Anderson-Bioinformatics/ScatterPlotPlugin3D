@@ -34,8 +34,7 @@ export function initDragToSelect() {
 		if (helper.isDown) {
 			let pos = Plot3D.getMouseXYZ(event)
 			selectionBox.endPoint.set(pos.x, pos.y, pos.z)
-			var allSelected = selectionBox.select()
-			allSelected.forEach(pt => {
+			selectionBox.select().forEach(pt => {
 				let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
 				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
 				sphere.userData.type = 'select sphere'
@@ -50,15 +49,14 @@ export function initDragToSelect() {
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
-		let allSelected = selectionBox.select()
-		allSelected.forEach(a => {
+		selectionBox.select().forEach(a => {
 			Plot3D.selectedPointIds.push(a.userData.id)
 		})
 		VAN.postMessage({ 
 			op: 'selectLabels',
 			selection: {
 				axis: 'column',
-				pointIds: allSelected.map(a => {return a.userData.id}),
+				pointIds: Plot3D.selectedPointIds,
 				clickType: 'ctrlClick'
 			}
 		})
