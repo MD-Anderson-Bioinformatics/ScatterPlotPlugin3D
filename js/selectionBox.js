@@ -22,7 +22,9 @@ export function initDragToSelect() {
 	/* drag start */
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mousedown', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
-		clearSelectedSpheres()
+		if (!event.metaKey && !event.ctrlKey) {
+			clearSelectedSpheres()
+		} 
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.startPoint.set(pos.x, pos.y, pos.z)
