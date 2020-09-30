@@ -8,11 +8,28 @@ p,h1,a {
 }
 
 #scatter-plot-3d-canvas { 
-	margin-left: 5%;
-	margin-right: 5%;
-	width: 90% !important ;
-	height: 90% !important ;
-	/*border: 1px solid grey;*/
+	position: absolute;
+	margin-left: 3%;
+	margin-right: 3%;
+	width: 80% !important ;
+	height: 80% !important ;
+}
+
+#legend {
+	position: absolute;
+	top: 120px;
+	left: 85%;
+	width: 20%;
+	height: 500px;
+}
+
+/* color labels for legend */
+.circle {
+	height: 10pt;
+	width: 10pt;
+	margin-right: 5pt;
+	border-radius: 50%;
+	display: inline-block;
 }
 
 #icons-div {
@@ -39,7 +56,7 @@ p,h1,a {
 }
 
 /* selection box helper 
-  (displayed as user drags mouse to select points) */
+	(displayed as user drags mouse to select points) */
 .selectBox {
 	border: 1px solid #55aaff;
 	background-color: rgba:(75, 160, 225, 0.3);
@@ -84,4 +101,10 @@ p,h1,a {
 	font-family: Arial;
 }
 /* end toolitp for 'buttons' */
+
+
+
+
+
+
 

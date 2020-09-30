@@ -5,6 +5,7 @@ import {VAN} from './interface_js/ngchm.js';
 import {HoverHelper} from './js/hoverHelper.js';
 import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
 import {initDragToSelect} from './js/selectionBox.js';
+import {drawLegend} from './js/legend.js'
 
 
 /* Expored Plot3D object containes the function listed here,
@@ -240,6 +241,7 @@ function createPlot(data, _plotOptions) {
 	if (Plot3D.plotOptions.showOriginAxes) {
 		addOriginAxes()
 	}
+	drawLegend(dataPoints)
 	Plot3D.camera.position.z = 30; // was 25
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */

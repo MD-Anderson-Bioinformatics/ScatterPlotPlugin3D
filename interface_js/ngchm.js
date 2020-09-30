@@ -75,7 +75,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 			x: vanodi.data.axes[0].coordinates[0][idx],
 			y: vanodi.data.axes[0].coordinates[1][idx],
 			z: vanodi.data.axes[0].coordinates[2][idx],
-			batch: '',
+			batch: vanodi.data.axes[0].covariates[0][idx],
 			color: covColor,
 			id: vanodi.data.axes[0].actualLabels[idx]
 		})
