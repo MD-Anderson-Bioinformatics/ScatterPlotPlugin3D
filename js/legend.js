@@ -48,6 +48,9 @@ export function drawLegend(data) {
 	let batchIds = getBatchIds(data);
 	let colorMap = getColors(batchIds, data)
 	let legendDiv = document.getElementById('legend')
+	while (legendDiv.firstChild) {
+		legendDiv.removeChild(legendDiv.firstChild)
+	}
 	for (const [key, value] of Object.entries(colorMap)) {
 		let pNode = document.createElement('p')
 		let circleNode = document.createElement('span')
