@@ -66,7 +66,8 @@ VAN.addMessageListener('plot', function(vanodi) {
 		highlightColor: vanodi.config.options['Highlight Color'],
 		pointSize: vanodi.config.options['Point Size'],
 		showOriginAxes: vanodi.config.options['Show Origin Axes'],
-		colorAxes: vanodi.config.options['Color Axes']
+		colorAxes: vanodi.config.options['Color Axes'],
+		legendTitle: vanodi.config.axes[0].covariates[0].label
 	}
 	// organize data to plot
 	let plotData = []

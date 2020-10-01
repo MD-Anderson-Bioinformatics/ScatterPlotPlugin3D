@@ -51,6 +51,10 @@ export function drawLegend(data) {
 	while (legendDiv.firstChild) {
 		legendDiv.removeChild(legendDiv.firstChild)
 	}
+	let pNode = document.createElement('p')
+	let textNode = document.createTextNode(Plot3D.plotOptions.legendTitle)
+	pNode.appendChild(textNode)
+	legendDiv.appendChild(pNode)
 	for (const [key, value] of Object.entries(colorMap)) {
 		let pNode = document.createElement('p')
 		let circleNode = document.createElement('span')
