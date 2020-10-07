@@ -71,6 +71,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.getAzimuthalAngle = function () {
 		return spherical.theta;
 	};
+	this.getRadius = function() {
+		return spherical.radius;
+	}
 	this.saveState = function () {
 		scope.target0.copy( scope.target );
 		scope.position0.copy( scope.object.position );

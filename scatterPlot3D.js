@@ -13,7 +13,10 @@ import {drawLegend} from './js/legend.js'
 */
 export const Plot3D = {
 	createPlot,
-	getMouseXYZ
+	getMouseXYZ,
+	setPolarAngle,
+	setAzimuthalAngle,
+	setRadius
 };
 
 Plot3D.selectedPointIds = []
@@ -212,6 +215,73 @@ window.addEventListener('resize', () => {
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 }, false)
 
+/* Function to set 'zoom level'
+
+	Orbit controls for a PerspectiveCamera use dollyIn and dollyOut
+	rather than zoom. There is also no public function to set the
+	dollyIn/Out level. This function provides a workaround by temporarily 
+	setting the min and max values to the input radius.
+
+	Inputs:
+		radius: floating point number to set the zoom level. Higher
+		        numbers set the camera farther than smaller numbers
+*/
+function setRadius(radius) {
+	Plot3D.controls.minDistance = radius
+	Plot3D.controls.maxDistance = radius
+	Plot3D.controls.update()
+	Plot3D.controls.minDistance = 0
+	Plot3D.controls.maxDistance = Infinity
+}
+
+/* Function to set polar angle
+
+	OrbitControls doesn't have an explicit function to set the 
+	polar angle. This function provides a workaround by temporarily
+	setting the min and max values to the input angle
+	
+	Inputs:
+		angle: polar angle (phi) in radians
+*/
+function setPolarAngle(angle) {
+	angle %= Math.PI
+	Plot3D.controls.minPolarAngle = angle
+	Plot3D.controls.maxPolarAngle = angle
+	Plot3D.controls.update();
+	Plot3D.controls.minPolarAngle = 0
+	Plot3D.controls.maxPolarAngle = Math.PI 
+}
+
+/* Function to set azimuthal angle
+
+	Orbit controls doesn't have an explicit function to set the
+	azimuthal angle. This function provides a workaround by temporarily
+	setting the min and max values to the input angle
+	
+	Inputs:
+		angle: azimuthal angle (theta) in radians
+*/
+function setAzimuthalAngle(angle) {
+	Plot3D.controls.minAzimuthAngle = angle
+	Plot3D.controls.maxAzimuthAngle = angle
+	Plot3D.controls.update();
+	Plot3D.controls.minAzimuthAngle = -2*Math.PI
+	Plot3D.controls.maxAzimuthAngle = 2*Math.PI
+}
+
+/* Function to display spherical coordinate of OrbitControls
+
+	Displays the polar (phi), azimuthal (theta), and radius (akin to zoom level)
+	on the corresponding DOM input elements.
+*/
+function displayAngles() {
+	try {
+		document.getElementById('polarValue').value = Plot3D.controls.getPolarAngle().toFixed(4)
+		document.getElementById('azimuthalValue').value = Plot3D.controls.getAzimuthalAngle().toFixed(4)
+		document.getElementById('radiusValue').value = Plot3D.controls.getRadius().toFixed(4)
+	} catch(err) {}
+}
+
 /* Main function to create 3-d scatter plot. Exported 
 
   Inputs:
@@ -223,6 +293,7 @@ function createPlot(data, _plotOptions) {
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
 	initializeScene();
+
 
 	let dataPoints = organizeData(data)
 	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
@@ -294,6 +365,9 @@ function createPlot(data, _plotOptions) {
 	Plot3D.controls.addEventListener('end', () => {
 		document.getElementById('name-coords-div').style.visibility = 'visible';
 		Plot3D.disableHoverHighlight = false;
+		displayAngles()
 	})
+	Plot3D.controls.update()
+	displayAngles()
 } // end exported function createPlot
 
