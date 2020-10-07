@@ -8,8 +8,9 @@ p,h1,a {
 }
 
 .sphericalLabel {
-	font-family: Helvetica; 
+	font-family: "Times New Roman", Times, serif; 
 	margin-right: 2px;
+	font-style: italic;
 }
 
 #scatter-plot-3d-canvas { 

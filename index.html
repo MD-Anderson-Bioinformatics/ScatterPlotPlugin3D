@@ -11,11 +11,17 @@
 		<script type="module" src="./interface_js/ngchm.js"></script>
 	</head>
 	<body>
-		<div id="icons-div">
-			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon' style='visibility:hidden;'>
+		<div id="icons-div" style='visibility:hidden;'>
+			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon'>
 			<span class='button-tooltip' id='orbit-controls-tooltip'>Zoom with mouse wheel; rotate by holding down the mouse and dragging.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
-			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon' style='visibility:hidden;'>
+			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon'>
 			<span class='button-tooltip' id='drag-to-select-tooltip'>Drag a rectangle to select points. Hold down comand key to select more than one region.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
+			<label class='sphericalLabel' for='radiusValue'>r:</label>
+				<input type='text' id='radiusValue' style="width:60px;" />
+			<label class='sphericalLabel' for='azimuthalValue'>&theta;:</label>
+				<input type='text' id='azimuthalValue' style="width:60px;" />
+			<label class='sphericalLabel' for='polarValue'>&phi;:</label>
+				<input type='text' id='polarValue' style="width:60px;" />
 		</div>
 		<div id='name-coords-div'>
 				<p id='point-name'></p>

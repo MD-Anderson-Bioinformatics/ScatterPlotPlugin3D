@@ -344,8 +344,7 @@ function createPlot(data, _plotOptions) {
 			document.getElementById('orbit-controls-icon').classList.add('selected-icon')
 		}
 	})
-	document.getElementById('orbit-controls-icon').style.visibility = 'visible'
-	document.getElementById('drag-to-select-icon').style.visibility = 'visible'
+	document.getElementById('icons-div').style.visibility = 'visible'
 	document.getElementById('orbit-controls-icon').click()
 	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
 	initDragToSelect();
@@ -355,6 +354,7 @@ function createPlot(data, _plotOptions) {
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */
 	Plot3D.controls.addEventListener( 'change', () => { 
 		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
+		displayAngles()
 	});
 	/* Hide the point name/coords div when user is rotating/zooming */
 	Plot3D.controls.addEventListener('start', () => {
@@ -369,5 +369,17 @@ function createPlot(data, _plotOptions) {
 	})
 	Plot3D.controls.update()
 	displayAngles()
+	document.getElementById('radiusValue').addEventListener('change', function(event) {
+		let r = parseFloat(this.value)
+		setRadius(r)
+	})
+	document.getElementById('azimuthalValue').addEventListener('change', function(event) {
+		let theta = parseFloat(this.value)
+		setAzimuthalAngle(theta)
+	})
+	document.getElementById('polarValue').addEventListener('change', function(event) {
+		let phi = parseFloat(this.value)
+		setPolarAngle(phi)
+	})
 } // end exported function createPlot
 
