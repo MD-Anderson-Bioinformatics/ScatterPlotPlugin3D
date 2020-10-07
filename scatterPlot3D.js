@@ -353,7 +353,9 @@ function createPlot(data, _plotOptions) {
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */
 	Plot3D.controls.addEventListener( 'change', () => { 
-		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
+		setTimeout(function() {
+			Plot3D.renderer.render(Plot3D.scene,Plot3D.camera)
+		}, 100)
 		displayAngles()
 	});
 	/* Hide the point name/coords div when user is rotating/zooming */
