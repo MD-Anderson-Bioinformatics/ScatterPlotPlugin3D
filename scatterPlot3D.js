@@ -41,6 +41,21 @@ function getMouseXYZ(event) {
 	}
 }
 
+/* Function to validate input is numeric
+
+	A warning message is displayed if the value is not numeric
+*/
+function validateNumericInput(value) {
+	if (isNaN(value)) {
+		document.getElementById('alertMessage').innerHTML = 'A numeric value is required' 
+		document.getElementById('myAlert').style.visibility = 'visible';
+		return false;
+	} else {
+		document.getElementById('myAlert').style.visibility = 'hidden';
+		return true;
+	}
+}
+
 /* Function to initialize input plot options
 
   Creates plotOptions, using the user-specified values if available,
@@ -350,15 +365,17 @@ function createPlot(data, _plotOptions) {
 	initDragToSelect();
 	HoverHelper.initHoverToHighlight();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	Plot3D.controls.update()
+	displayAngles()
 
-	/* Render scene whenever user moves scene (e.g. pan, zoom) */
+	/* Event listener to render scene whenever user moves scene (e.g. pan, zoom) */
 	Plot3D.controls.addEventListener( 'change', () => { 
 		setTimeout(function() {
 			Plot3D.renderer.render(Plot3D.scene,Plot3D.camera)
 		}, 100)
 		displayAngles()
 	});
-	/* Hide the point name/coords div when user is rotating/zooming */
+	/* Event listeners to hide the point name/coords div when user is rotating/zooming */
 	Plot3D.controls.addEventListener('start', () => {
 		document.getElementById('name-coords-div').style.visibility = 'hidden';
 		Plot3D.disableHoverHighlight = true;
@@ -369,17 +386,19 @@ function createPlot(data, _plotOptions) {
 		Plot3D.disableHoverHighlight = false;
 		displayAngles()
 	})
-	Plot3D.controls.update()
-	displayAngles()
+	/* Event listeners for changing the OrbitControls based on user input */
 	document.getElementById('radiusValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
 		let r = parseFloat(this.value)
 		setRadius(r)
 	})
 	document.getElementById('azimuthalValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
 		let theta = parseFloat(this.value)
 		setAzimuthalAngle(theta)
 	})
 	document.getElementById('polarValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
 		let phi = parseFloat(this.value)
 		setPolarAngle(phi)
 	})

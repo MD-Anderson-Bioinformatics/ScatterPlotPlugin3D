@@ -109,8 +109,33 @@ p,h1,a {
 }
 /* end toolitp for 'buttons' */
 
+/* The alert message box */
+.alert {
+	padding: 20px;
+	font-family: Helvetica; 
+	background-color: #DA291C;
+	color: white;
+	margin-bottom: 15px;
+	position: absolute;
+	z-index: 999;
+	visibility: hidden;
+}
 
+/* The close button for alert message box */
+.closebtn {
+	margin-left: 15px;
+	color: white;
+	font-weight: bold;
+	float: right;
+	font-size: 22px;
+	line-height: 20px;
+	cursor: pointer;
+}
 
+/* When moving the mouse over the close button */
+.closebtn:hover {
+	color: black;
+}
 
 
 
