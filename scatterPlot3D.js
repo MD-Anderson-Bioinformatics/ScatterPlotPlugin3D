@@ -1,18 +1,42 @@
 //
 // Initial ideas for using threejs for 3d scatter plot
 //
-import {VAN} from './ngchm.js';
-import {PickHelper} from './pickHelper.js';
-import {addBoxAxes, addOriginAxes} from './drawAxes.js';
+import {VAN} from './interface_js/ngchm.js';
+import {HoverHelper} from './js/hoverHelper.js';
+import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
+import {initDragToSelect} from './js/selectionBox.js';
+import {drawLegend} from './js/legend.js'
+
 
 /* Expored Plot3D object containes the function listed here,
    and a few other parameters (e.g. scene, camera, renderer)
 */
 export const Plot3D = {
-	createPlot
+	createPlot,
+	getMouseXYZ
 };
 
 Plot3D.selectedPointIds = []
+
+/* Exported function to return mouse XYZ coordinates in the scene
+
+	Inputs:
+		event {event} mouse event
+	Output:
+		{object} xyz coordiantes of mouse in scene
+*/
+function getMouseXYZ(event) {
+	const rect = Plot3D.mainCanvas.getBoundingClientRect();
+	let relativePosition = {
+		x: (event.clientX - rect.left) * Plot3D.mainCanvas.width / rect.width,
+		y: (event.clientY - rect.top) * Plot3D.mainCanvas.height / rect.height,
+	};
+	return {
+		x: (relativePosition.x / Plot3D.mainCanvas.width) * 2 - 1,
+		y: (relativePosition.y / Plot3D.mainCanvas.height) * -2 + 1,
+		z: 0.5
+	}
+}
 
 /* Function to initialize input plot options
 
@@ -124,10 +148,23 @@ function organizeData(data) {
 
 /* Function to clear scene */
 function clearScene() {
+	if (Plot3D.hasOwnProperty('scene')) {
+		while (Plot3D.scene.children.length > 0) {
+			Plot3D.scene.remove(Plot3D.scene.children[0])
+		}
+	}
 	Plot3D.scene = null;
 	Plot3D.camera = null;
 	Plot3D.controls = null; 
 	Plot3D.renderer = null;
+	if (Plot3D.geometriesMaterials) {
+		for (const [key,value] of Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+			value.dispose()
+		}
+		for (const [key,value] of Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+			value.dispose()
+		}
+	}
 }
 
 /* Function to create initial scene 
@@ -138,24 +175,17 @@ function clearScene() {
 function initializeScene() {
 	Plot3D.scene = new THREE.Scene()
 	Plot3D.scene.background = new THREE.Color(Plot3D.plotOptions.backgroundColor)
+	Plot3D.mainCanvas = document.getElementById('scatter-plot-3d-canvas')
 	let fov = 60; // 50 is default
-	let aspect = 1; // window.innerWidth / window.innerHeight;
+	let aspect = window.innerWidth / window.innerHeight;
 	let near = 0.1
 	let far = 200; // was 1000
 	Plot3D.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-	Plot3D.mainCanvas = document.getElementById('main-plot')
 	Plot3D.renderer = new THREE.WebGLRenderer({
 		canvas: Plot3D.mainCanvas
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(Plot3D.renderer.domElement);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
-	Plot3D.controls.keys = {
-		LEFT: 76,
-		UP: 85,
-		RIGHT: 82,
-		BOTTOM: 66
-	}
 }
 
 function createScales(dataPoints) {
@@ -174,6 +204,14 @@ function createScales(dataPoints) {
 	return scale
 }
 
+/* redraw the plot with appropriate aspect ratio on window resize */
+window.addEventListener('resize', () => {
+	Plot3D.camera.aspect = window.innerWidth / window.innerHeight;
+	Plot3D.camera.updateProjectionMatrix();
+	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+}, false)
+
 /* Main function to create 3-d scatter plot. Exported 
 
   Inputs:
@@ -185,7 +223,7 @@ function createPlot(data, _plotOptions) {
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
 	initializeScene();
-	const pickHelper = new PickHelper(Plot3D.plotOptions)
+
 	let dataPoints = organizeData(data)
 	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
 	let scale = createScales(dataPoints);
@@ -203,45 +241,59 @@ function createPlot(data, _plotOptions) {
 	if (Plot3D.plotOptions.showOriginAxes) {
 		addOriginAxes()
 	}
+	drawLegend(dataPoints)
 	Plot3D.camera.position.z = 30; // was 25
 
-	const pickPosition = {x: 0, y: 0}; // position of mouse used for picking points under mouse
-
-	function getCanvasRelativePosition(event) {
-		const rect = Plot3D.mainCanvas.getBoundingClientRect();
-		return {
-			x: (event.clientX - rect.left) * Plot3D.mainCanvas.width / rect.width,
-			y: (event.clientY - rect.top) * Plot3D.mainCanvas.height / rect.height,
-		};
-	}
-
-	/* function to get position of mouse for picking points */
-	function findPointUnderMouse(event) {
-		pickHelper.clearHighlightedPoints()
-		const pos = getCanvasRelativePosition(event)
-		pickPosition.x = (pos.x / Plot3D.mainCanvas.width) * 2 - 1;
-		pickPosition.y = (pos.y / Plot3D.mainCanvas.height) * -2 + 1;
-		pickHelper.pick(pickPosition)
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
-	}
-
-	/* function to clear mouse position for selecting points */
-	function clearMousePointerPosition() {
-		pickPosition.x = -100000;
-		pickPosition.y = -100000;
-		pickHelper.clearHighlightedPoints()
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
-	}
-
-	window.addEventListener('mousemove',findPointUnderMouse)
-	window.addEventListener('mouseout', clearMousePointerPosition);
-	window.addEventListener('mouseleave', clearMousePointerPosition);
-
+	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
+	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
+		event.target.classList.add('selected-icon')
+		document.getElementById('drag-to-select-icon').classList.remove('selected-icon')
+		Plot3D.mode = 'orbit'
+		Plot3D.controls.enabled = true
+	})
+	document.getElementById('drag-to-select-icon').addEventListener('click', (event) => {
+		event.target.classList.add('selected-icon')
+		document.getElementById('orbit-controls-icon').classList.remove('selected-icon')
+		Plot3D.mode = 'select'
+		Plot3D.controls.enabled = false
+	})
+	/* toggle between modes when user clicks 's' key */
+	document.addEventListener('keydown', event => {
+		let key = event.key || event.keyCode;
+		if (key != 's') {return}
+		if (Plot3D.mode == 'orbit') {
+			Plot3D.mode = 'select'
+			Plot3D.controls.enabled = false
+			document.getElementById('drag-to-select-icon').classList.add('selected-icon')
+			document.getElementById('orbit-controls-icon').classList.remove('selected-icon')
+		} else {
+			Plot3D.mode = 'orbit'
+			Plot3D.controls.enabled = true
+			document.getElementById('drag-to-select-icon').classList.remove('selected-icon')
+			document.getElementById('orbit-controls-icon').classList.add('selected-icon')
+		}
+	})
+	document.getElementById('orbit-controls-icon').style.visibility = 'visible'
+	document.getElementById('drag-to-select-icon').style.visibility = 'visible'
+	document.getElementById('orbit-controls-icon').click()
+	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
+	initDragToSelect();
+	HoverHelper.initHoverToHighlight();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 
 	/* Render scene whenever user moves scene (e.g. pan, zoom) */
 	Plot3D.controls.addEventListener( 'change', () => { 
 		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
 	});
+	/* Hide the point name/coords div when user is rotating/zooming */
+	Plot3D.controls.addEventListener('start', () => {
+		document.getElementById('name-coords-div').style.visibility = 'hidden';
+		Plot3D.disableHoverHighlight = true;
+		Plot3D.scene.getObjectByUserDataProperty('name','hover highlight sphere').visible = false
+	})
+	Plot3D.controls.addEventListener('end', () => {
+		document.getElementById('name-coords-div').style.visibility = 'visible';
+		Plot3D.disableHoverHighlight = false;
+	})
 } // end exported function createPlot
 

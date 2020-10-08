@@ -1,5 +1,9 @@
-import {Plot3D} from './scatterPlot3D.js'
+import {Plot3D} from '../scatterPlot3D.js'
 
+/*
+	This module contains code for highlighting points selected on
+	the NGCHM
+*/
 
 export const SelectPoints = {
 	selectPoints,
@@ -8,11 +12,12 @@ export const SelectPoints = {
 
 function clearSelectedPointIds() {
 	Plot3D.selectedPointIds = []
+	clearSelectedPoints();
 }
 
 /* Prototype function to select an object based on a userData property
 
-  Taken from: https://discourse.threejs.org/t/getobject-by-any-custom-property-present-in-userdata-of-object/3378/2
+	Taken from: https://discourse.threejs.org/t/getobject-by-any-custom-property-present-in-userdata-of-object/3378/2
 */
 THREE.Object3D.prototype.getObjectByUserDataProperty = function ( name, value ) {
 	if ( this.userData[ name ] === value ) return this;
@@ -26,14 +31,16 @@ THREE.Object3D.prototype.getObjectByUserDataProperty = function ( name, value ) 
 	return undefined;
 }
 
-/* Function to select points
+/* Function to select points 
 
-  Creates spheres to highlight selected points from the pointsList input.
-  The spheres have userData.typ = 'select sphere', which is used for removing
-  them in clearSelectedPoints()
+	Creates spheres to highlight selected points from the pointsList input.
+	The spheres have userData.typ = 'select sphere', which is used for removing
+	them in clearSelectedPoints()
 
-  Input:
-    pointsList list of point ids to highlight 
+	This function is mostly for showing points selected on the NGCHM
+
+	Input:
+		pointsList list of point ids to highlight 
 */
 function selectPoints(pointsList) {
 	if (Plot3D.plotOptions == undefined) { return }
@@ -51,7 +58,7 @@ function selectPoints(pointsList) {
 
 /* Function to unselect points
 
-  Removes all objects with userData.type = 'select sphere' from scene.
+	Removes all objects with userData.type = 'select sphere' from scene.
 */
 function clearSelectedPoints() {
 	if (Plot3D.scene == undefined) {return}

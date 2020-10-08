@@ -3,34 +3,17 @@
 	<head>
 		<title>threejs</title>
 		<meta charset='utf-8'/>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
-			h1, p, a { font-family: Helvetica; }
-			#point-name {
-				width: 100%;
-				height: 12px;
-				text-align: right;
-			}
-			#show-hover-point-coords{
-				width: 100%;
-				height: 12px;
-				text-align: right;
-			}
-			#xyzdiv {
-				padding-right: 20px;
-				margin-right: 20px;
-			}
-		</style>
-		<script src="js/three.min.js"></script>
-		<script src="js/OrbitControls.js"></script>
-		<script src="demo_data/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
-		<script type="module" src="scatterPlot3D.js"></script>
-		<script type="module" src="selections.js"></script>
-		<script src="resources/threex.rendererstats.js"></script>
+		<link rel='stylesheet' href='./css/main.css'>
+		<script src="resources/three.min.js"></script>
+		<script src="resources/OrbitControls.js"></script>
+		<script src="demo_js/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
+		<script src="demo_js/threex.rendererstats.js"></script>  <!-- only using threex for profiling in demo plot -->
+		<script type="module" src="./scatterPlot3D.js"></script>
+		<script type="module" src="js/selections.js"></script>
 		<script type='module'>
 			import {Plot3D} from './scatterPlot3D.js';
-			import {SelectPoints} from './selections.js';
+			import {SelectPoints} from './js/selections.js';
+			import Stats from './demo_js/stats.module.js'; // only using stats module for profiling demo plot
 			document.addEventListener("DOMContentLoaded", function(event) {
 				d3.tsv('demo_data/data.tsv').then(function(data) {
 					const plotOptions = {
@@ -41,30 +24,22 @@
 						plotTitle: 'Demonstration',
 						legendTitle: 'i am legend',
 						backgroundColor: 'ivory',
-						showOriginAxes: true
+						showOriginAxes: 'true'
 					}
-					Plot3D.createPlot(data, plotOptions);
-				function redraw() {
-					let elem = document.getElementById('showOriginAxes')
-					plotOptions.showOriginAxes = elem.options[elem.selectedIndex].value;
-					elem = document.getElementById('x-axis-label')
-					plotOptions.xLabel = elem.options[elem.selectedIndex].value;
-					plotOptions.yLabel = 'Y'
-					plotOptions.zLabel = 'Z'
-					Plot3D.createPlot(data, plotOptions);
-				}
-				window.redraw = redraw;
+					Plot3D.createPlot(data.slice(0,300), plotOptions);
+					function redraw() {
+						plotOptions.showOriginAxes = 'false'
+						plotOptions.colorAxes = 'off'
+						plotOptions.yLabel = 'Y'
+						plotOptions.zLabel = 'Z'
+						Plot3D.createPlot(data.slice(400,500), plotOptions);
+					}
+					window.redraw = redraw;
 				})
-				function addSpheres() {
-					let pointsList = ['Sitdolorevelit.-7','Sitdolorevelit.-2']
-					SelectPoints.selectPoints(pointsList);
-				}
-				window.addSpheres = addSpheres;
-				function removeSpheres() {
-					SelectPoints.clearSelectedPoints();
-				}
-				window.removeSpheres = removeSpheres;
 			})
+			// using the stats module from https://threejs.org/examples/misc_boxselection.html
+			//var stats = new Stats()
+			//document.body.appendChild(stats.dom)
 			// Just here for debugging
 			// see: http://learningthreejs.com/blog/2013/06/25/monitor-rendering-performance-within-threejs/
 			var rendererStats  = new THREEx.RendererStats()
@@ -72,37 +47,35 @@
 			rendererStats.domElement.style.left  = '0px'
 			rendererStats.domElement.style.bottom    = '0px'
 			document.body.appendChild( rendererStats.domElement )
-			/* marohrdanz: for the demo-only, animate every frame
-			          (for the main index.html page, only rendering when things change)*/
+			 // marohrdanz: for the demo-only, animate every frame
+			 // for the main index.html page, only rendering when things change)
 			var animate = function() {
 				window.animationID = requestAnimationFrame(animate);
 				if (Plot3D.controls) Plot3D.controls.update()
 				if (Plot3D.camera) {
 					Plot3D.renderer.render(Plot3D.scene, Plot3D.camera) 
 				}
-				rendererStats.update(Plot3D.renderer);
+				//rendererStats.update(Plot3D.renderer);
+				//stats.update()
 			}
-			animate()
+			//animate()
 		</script>
 	</head>
 	<body>
-		<div id="xyzdiv">
-				<p id="point-name"></p>
-				<p id='show-hover-point-coords'></p>
-			<select name='showOriginAxes' id='showOriginAxes'>
-				<option value=true>Show Origin Axes</option>
-				<option value=false>Hide Origin Axes</option>
-			</select>
-			<select name='x-axis-label' id='x-axis-label'>
-				<option value='x-axis'>x-axis</option>
-				<option value='X-AXIS'>X-AXIS</option>
-				<option value='X'>X</option>
-			</select>
-			<button onclick="redraw()">Redraw</button>
-			<button onclick="addSpheres()">Add Spheres</button>
-			<button onclick="removeSpheres()">Remove Spheres</button>
+		<div id="icons-div">
+			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon' style='visibility:hidden;'>
+			<span class='button-tooltip' id='orbit-controls-tooltip'>Zoom with mouse wheel; rotate by holding down the mouse and dragging.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
+			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon' style='visibility:hidden;'>
+			<span class='button-tooltip' id='drag-to-select-tooltip'>Drag a rectangle to select points. Hold down comand key to select more than one region.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
+			<button type='button' onclick='redraw()'>Click Me</button>
 		</div>
-		<canvas id='main-plot'></canvas>
+		<div id='name-coords-div'>
+				<p id='point-name'></p>
+				<p id='show-hover-point-coords'></p>
+		</div>
+		<canvas id='scatter-plot-3d-canvas' style='visibility:hidden;'></canvas>
+		<div id='legend' width="200" height="500">
+		</div>
 	</body>
 
 </html>

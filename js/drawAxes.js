@@ -1,7 +1,7 @@
 //
 // Functions for drawing axes
 //
-import {Plot3D} from './scatterPlot3D.js';
+import {Plot3D} from '../scatterPlot3D.js';
 
 /* Function to put xyz axes at origin
 

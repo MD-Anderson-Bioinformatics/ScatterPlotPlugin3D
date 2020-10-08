@@ -3,38 +3,25 @@
 	<head>
 		<title>ScatterPlot3DPlugin</title>
 		<meta charset='utf-8'/>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
-			p { font-family: Helvetica; }
-			#point-name {
-				width: 100%;
-				height: 12px;
-				text-align: right;
-				font-size: 16px;
-				font-weight: bold;
-			}
-			#show-hover-point-coords{
-				width: 100%;
-				height: 12px;
-				text-align: right;
-				font-size: 14px;
-			}
-			#xyzdiv {
-				padding-right: 20px;
-				margin-right: 20px;
-			}
-		</style>
-		<script src="js/three.min.js"></script>
-		<script src="js/OrbitControls.js"></script>
-		<script type="module" src="js/vanodi.js"></script>
-		<script type="module" src="scatterPlot3D.js"></script>
-		<script type="module" src="ngchm.js"></script>
+		<link rel='stylesheet' href='./css/main.css'>
+		<script src="resources/three.min.js"></script>
+		<script src="resources/OrbitControls.js"></script>
+		<script type="module" src="resources/vanodi.js"></script>
+		<script type="module" src="./scatterPlot3D.js"></script>
+		<script type="module" src="./interface_js/ngchm.js"></script>
 	</head>
 	<body>
-		<div>
-			<div id='xyzdiv'><p id="point-name"></p><p id='show-hover-point-coords'></p></div>
-			<canvas id="main-plot"></canvas>
+		<div id="icons-div">
+			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon' style='visibility:hidden;'>
+			<span class='button-tooltip' id='orbit-controls-tooltip'>Zoom with mouse wheel; rotate by holding down the mouse and dragging.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
+			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon' style='visibility:hidden;'>
+			<span class='button-tooltip' id='drag-to-select-tooltip'>Drag a rectangle to select points. Hold down comand key to select more than one region.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
 		</div>
+		<div id='name-coords-div'>
+				<p id='point-name'></p>
+				<p id='show-hover-point-coords'></p>
+		</div>
+		<canvas id='scatter-plot-3d-canvas' style='visibility:hidden;'></canvas>
+		<div id='legend' width='200' height='500'></div>
 	</body>
 </html>

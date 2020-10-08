@@ -1,6 +1,6 @@
-import {Plot3D} from './scatterPlot3D.js'
-import {Vanodi} from './js/vanodi.js'
-import {SelectPoints} from './selections.js'
+import {Plot3D} from '../scatterPlot3D.js'
+import {Vanodi} from '../resources/vanodi.js'
+import {SelectPoints} from '../js/selections.js'
 
 // Script for interface with NGCHM
 export var VAN = new Vanodi({
@@ -28,10 +28,6 @@ export var VAN = new Vanodi({
 		}
 	],
 	options: [
-		/*{ label: 'Axes Render Type', type: 'dropdown', choices: [
-			{label: 'Box', value: 'box'},
-			{label: 'Origin', value: 'origin'}
-		], helpText: '<u>Box</u>: axes rendered as cube around data.<br><u>Origin</u>: axes rendered as Cartesian xyz at origin'},*/
 		{ label: 'Show Origin Axes', type: 'dropdown', choices: [
 			{label: 'Yes', value: true},
 			{label: 'No', value: false}
@@ -70,7 +66,8 @@ VAN.addMessageListener('plot', function(vanodi) {
 		highlightColor: vanodi.config.options['Highlight Color'],
 		pointSize: vanodi.config.options['Point Size'],
 		showOriginAxes: vanodi.config.options['Show Origin Axes'],
-		colorAxes: vanodi.config.options['Color Axes']
+		colorAxes: vanodi.config.options['Color Axes'],
+		legendTitle: vanodi.config.axes[0].covariates[0].label
 	}
 	// organize data to plot
 	let plotData = []
@@ -79,7 +76,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 			x: vanodi.data.axes[0].coordinates[0][idx],
 			y: vanodi.data.axes[0].coordinates[1][idx],
 			z: vanodi.data.axes[0].coordinates[2][idx],
-			batch: '',
+			batch: vanodi.data.axes[0].covariates[0][idx],
 			color: covColor,
 			id: vanodi.data.axes[0].actualLabels[idx]
 		})

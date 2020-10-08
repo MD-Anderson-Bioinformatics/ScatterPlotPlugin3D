@@ -1,0 +1,111 @@
+
+body { 
+	margin: 0; 
+}
+
+p,h1,a { 
+	font-family: Helvetica; 
+}
+
+#scatter-plot-3d-canvas { 
+	position: absolute;
+	margin-left: 3%;
+	margin-right: 3%;
+	width: 80% !important ;
+	height: 80% !important ;
+}
+
+#legend {
+	position: absolute;
+	top: 120px;
+	left: 85%;
+	width: auto;
+	height: auto;
+	white-space: nowrap;
+}
+
+/* color labels for legend */
+.circle {
+	height: 10pt;
+	width: 10pt;
+	margin-right: 5pt;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+#icons-div {
+	width: 50%;
+	float: left;
+}
+
+#name-coords-div {
+	margin-left: 50%;
+	padding-right: 20px;
+	margin-right: 20px;
+}
+
+#point-name {
+	height: 16px;
+	text-align: right;
+	font-size: 16px;
+	font-weight: bold;
+}
+#show-hover-point-coords{
+	height: 16px;
+	text-align: right;
+	font-size: 14px;
+}
+
+/* selection box helper 
+	(displayed as user drags mouse to select points) */
+.selectBox {
+	border: 1px solid #55aaff;
+	background-color: rgba:(75, 160, 225, 0.3);
+	position: fixed;
+}
+
+/* icons for zoom/pan, lasso, reset */
+.icon {
+	margin-right: 10px;
+	padding: 2px;
+	color: #0D4F8B;
+	height: 24px;
+}
+
+.icon:hover {
+	cursor: pointer;
+	height: 28px;
+}
+
+.selected-icon { /* when in a given mode, highlight corresponding button icon */
+	border: solid #0D4F8B 1px;
+	height: 28px !important;
+}
+
+/* tooltip for 'buttons' (orbit mode, select mode) */
+#orbit-controls-icon:hover + #orbit-controls-tooltip {
+	display: block;
+}
+#drag-to-select-icon:hover + #drag-to-select-tooltip {
+	display: block;
+}
+.button-tooltip {
+	display: none;
+	background: #F0F8FF;
+	border: solid 1px gray;
+	margin-left: 28px;
+	padding:10px;
+	position: absolute;
+	z-index: 1000;
+	width: 200px;
+	height: auto;
+	font-family: Arial;
+}
+/* end toolitp for 'buttons' */
+
+
+
+
+
+
+
