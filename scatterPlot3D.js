@@ -279,7 +279,7 @@ function setRadius(radius) {
 	Plot3D.controls.maxDistance = radius
 	Plot3D.controls.update()
 	Plot3D.controls.minDistance = 0
-	Plot3D.controls.maxDistance = Infinity
+	Plot3D.controls.maxDistance = 40
 }
 
 /* Function to set polar angle
