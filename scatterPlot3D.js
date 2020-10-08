@@ -56,6 +56,38 @@ function validateNumericInput(value) {
 	}
 }
 
+/* Function to save spherical coordiantes of OrbitControls
+
+	Saves the r, theta, and phi of the current OrbitControls
+	to Plot3D.spherical.
+	(these can be used to reset the rotation/zoom)
+*/
+function saveSphericalCoordinates() {
+	Plot3D.spherical = {
+		r: Plot3D.controls.getRadius(),
+		theta: Plot3D.controls.getAzimuthalAngle(),
+		phi: Plot3D.controls.getPolarAngle()
+	}
+}
+
+/* Function to set spherical cooridinates of OrbitControls
+
+	Sets the r, theta, and phi of OrbitControls using the values
+	in Plot3D.spherical if defined, otherwise initializes them to
+	reasonable initial values.
+*/
+function setSphericalCoordinates() {
+	if (typeof Plot3D.spherical !== 'undefined') {
+		Plot3D.setRadius(Plot3D.spherical.r)
+		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
+		Plot3D.setPolarAngle(Plot3D.spherical.phi)
+	} else {
+		Plot3D.setRadius(30)
+		Plot3D.setAzimuthalAngle(0)
+		Plot3D.setPolarAngle(Math.PI/2)
+	}
+}
+
 /* Function to initialize input plot options
 
   Creates plotOptions, using the user-specified values if available,
@@ -204,6 +236,7 @@ function initializeScene() {
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
+	setSphericalCoordinates()
 }
 
 function createScales(dataPoints) {
@@ -328,7 +361,6 @@ function createPlot(data, _plotOptions) {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
-	Plot3D.camera.position.z = 30; // was 25
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
 	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
@@ -375,6 +407,7 @@ function createPlot(data, _plotOptions) {
 		}, 100)
 		displayAngles()
 	});
+
 	/* Event listeners to hide the point name/coords div when user is rotating/zooming */
 	Plot3D.controls.addEventListener('start', () => {
 		document.getElementById('name-coords-div').style.visibility = 'hidden';
@@ -385,6 +418,7 @@ function createPlot(data, _plotOptions) {
 		document.getElementById('name-coords-div').style.visibility = 'visible';
 		Plot3D.disableHoverHighlight = false;
 		displayAngles()
+		saveSphericalCoordinates()
 	})
 	/* Event listeners for changing the OrbitControls based on user input */
 	document.getElementById('radiusValue').addEventListener('change', function(event) {
