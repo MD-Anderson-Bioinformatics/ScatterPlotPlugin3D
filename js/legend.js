@@ -64,5 +64,23 @@ export function drawLegend(data) {
 		let textNode = document.createTextNode(key)
 		pNode.appendChild(textNode)
 		legendDiv.appendChild(pNode)
+		/* hover over legend item will make non-group points translucent */
+		pNode.addEventListener('mouseover',function(event) {
+			for (const [materialKey, materialValue] of 
+					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+				if (materialKey !== value) {
+					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = 0.15
+					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = true
+				}
+			}
+		})
+		/* undo that translucency */
+		pNode.addEventListener('mouseout',function(event) {
+			for (const [materialKey, materialValue] of 
+					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = 1
+				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = false
+			}
+		})
 	}
 }
