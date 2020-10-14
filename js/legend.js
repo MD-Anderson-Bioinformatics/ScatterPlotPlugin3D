@@ -51,6 +51,7 @@ export function drawLegend(data) {
 	while (legendDiv.firstChild) {
 		legendDiv.removeChild(legendDiv.firstChild)
 	}
+	legendDiv.style.visibility = 'visible';
 	let pNode = document.createElement('p')
 	let textNode = document.createTextNode(Plot3D.plotOptions.legendTitle)
 	pNode.appendChild(textNode)

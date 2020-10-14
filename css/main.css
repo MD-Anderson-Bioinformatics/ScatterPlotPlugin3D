@@ -23,11 +23,16 @@ p,h1,a {
 
 #legend {
 	position: absolute;
-	top: 120px;
+	top: 90px;
 	left: 85%;
 	width: auto;
 	height: auto;
+	max-height: 70% !important ;
+	padding-left: 10px;
+	padding-right: 10px;
 	white-space: nowrap;
+	border: 1px solid #D3D3D3;
+	overflow: scroll;
 }
 
 /* color labels for legend */
