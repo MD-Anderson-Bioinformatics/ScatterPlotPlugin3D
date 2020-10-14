@@ -324,9 +324,9 @@ function setAzimuthalAngle(angle) {
 */
 function displayAngles() {
 	try {
-		document.getElementById('polarValue').value = Plot3D.controls.getPolarAngle().toFixed(4)
-		document.getElementById('azimuthalValue').value = Plot3D.controls.getAzimuthalAngle().toFixed(4)
-		document.getElementById('radiusValue').value = Plot3D.controls.getRadius().toFixed(4)
+		document.getElementById('polarValue').value = (Plot3D.controls.getPolarAngle() * 180 / Math.PI).toFixed(0)
+		document.getElementById('azimuthalValue').value = (Plot3D.controls.getAzimuthalAngle() * 180 / Math.PI).toFixed(0)
+		document.getElementById('radiusValue').value = Plot3D.controls.getRadius().toFixed(1)
 	} catch(err) {}
 }
 
@@ -428,12 +428,12 @@ function createPlot(data, _plotOptions) {
 	})
 	document.getElementById('azimuthalValue').addEventListener('change', function(event) {
 		if (!validateNumericInput(this.value)) { return false; }
-		let theta = parseFloat(this.value)
+		let theta = parseFloat(this.value) * Math.PI / 180
 		setAzimuthalAngle(theta)
 	})
 	document.getElementById('polarValue').addEventListener('change', function(event) {
 		if (!validateNumericInput(this.value)) { return false; }
-		let phi = parseFloat(this.value)
+		let phi = parseFloat(this.value) * Math.PI / 180
 		setPolarAngle(phi)
 	})
 } // end exported function createPlot
