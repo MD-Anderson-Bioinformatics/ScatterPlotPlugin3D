@@ -113,6 +113,7 @@ function initializePlotOptions(plotOptions) {
 	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
 	op.colorAxes = plotOptions.hasOwnProperty('colorAxes') ? plotOptions.colorAxes : 'on';
+	op.hoverOpacity = plotOptions.hasOwnProperty('hoverOpacity') ? plotOptions.hoverOpacity : 0.3;
 	if (plotOptions.hasOwnProperty('showOriginAxes')) {
 		op.showOriginAxes = (plotOptions.showOriginAxes == 'true')
 	} else {

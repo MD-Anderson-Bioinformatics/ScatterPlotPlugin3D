@@ -58,6 +58,7 @@ export function drawLegend(data) {
 	legendDiv.appendChild(pNode)
 	for (const [key, value] of Object.entries(colorMap)) {
 		let pNode = document.createElement('p')
+		pNode.classList.add('legendEntry')
 		let circleNode = document.createElement('span')
 		circleNode.classList.add('circle')
 		circleNode.style.backgroundColor = value
@@ -70,8 +71,17 @@ export function drawLegend(data) {
 			for (const [materialKey, materialValue] of 
 					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
 				if (materialKey !== value) {
-					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = 0.15
+					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = Plot3D.plotOptions.hoverOpacity;
 					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = true
+				}
+			}
+			/* If transparency is off, don't make other legend entries transparent */
+			if (Plot3D.plotOptions.hoverOpacity != 1) {
+				let legendEntries = document.getElementsByClassName('legendEntry')
+				for (let le of legendEntries) {
+					if (le != this) {
+						le.style.opacity = 0.5
+					}
 				}
 			}
 		})
@@ -81,6 +91,12 @@ export function drawLegend(data) {
 					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
 				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = 1
 				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = false
+			}
+			if (Plot3D.plotOptions.hoverOpacity != 1) {
+				let legendEntries = document.getElementsByClassName('legendEntry')
+				for (let le of legendEntries) {
+					le.style.opacity = 1;
+				}
 			}
 		})
 	}
