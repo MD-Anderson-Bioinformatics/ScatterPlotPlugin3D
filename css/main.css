@@ -137,6 +137,10 @@ p,h1,a {
 	color: black;
 }
 
-
-
+/* xyz 'on hover' labels */
+.xyz-label {
+	font-style: italic;
+	font-family: "Times New Roman", Times, serif; 
+	font-size: 20px;
+}
 

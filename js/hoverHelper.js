@@ -152,11 +152,25 @@ class PickHelper {
 		}
 	}
 
-	/* Function to show XYZ coordinates */
+	/* Function to display XYZ coordinates
+	
+	  XYZ coordinates are displayed in element with id='show-hover-point-coords' 
+	  If the plotOption 'colorAxes' is on, the x,y,z labels are shown in colors matching
+	  the axes colors. Otherwise the color is ordinary black.
+	*/
 	showXYZ(coordinates) {
 		let xyzCoords = document.getElementById('show-hover-point-coords')
 		if (xyzCoords) {
-			xyzCoords.innerHTML = coordinates.x.toFixed(2) + ', ' + coordinates.y.toFixed(2) + ', ' + coordinates.z.toFixed(2)
+			if (Plot3D.plotOptions.colorAxes == 'on') {
+				xyzCoords.innerHTML = '<span class="xyz-label" style="color:#347aeb;">x:</span> ' 
+						+ coordinates.x.toPrecision(4) + ', ' 
+					+ '<span class="xyz-label" style="color:#eb347d;">y:</span> ' + coordinates.y.toPrecision(4) + ', ' 
+					+ '<span class="xyz-label" style="color:#46b533;">z:</span> ' + coordinates.z.toPrecision(4)
+			} else {
+				xyzCoords.innerHTML = '<span class="xyz-label">x:</span> ' + coordinates.x.toPrecision(2) + ', ' 
+					+ '<span class="xyz-label">y:</span> ' + coordinates.y.toPrecision(2) + ', ' 
+					+ '<span class="xyz-label">z:</span> ' + coordinates.z.toPrecision(2)
+			}
 		}
 	}
 
