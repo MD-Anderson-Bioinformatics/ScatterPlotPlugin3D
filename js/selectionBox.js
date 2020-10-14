@@ -41,8 +41,8 @@ export function initDragToSelect() {
 				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
 				sphere.userData.type = 'select sphere'
 				Plot3D.scene.add(sphere)
-				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 			})
+			Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		}
 	})
 	/* drag end */
