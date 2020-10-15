@@ -7,21 +7,51 @@ p,h1,a {
 	font-family: Helvetica; 
 }
 
+.sphericalLabel {
+	font-family: "Times New Roman", Times, serif; 
+	margin-right: 2px;
+	font-style: italic;
+}
+
+.flexcontainer {
+	display: flex;
+	flex-direction: row;
+}
+
 #scatter-plot-3d-canvas { 
-	position: absolute;
 	margin-left: 3%;
 	margin-right: 3%;
 	width: 80% !important ;
 	height: 80% !important ;
+	max-width: 850px;
+	min-width: 250px;
 }
 
 #legend {
-	position: absolute;
-	top: 120px;
-	left: 85%;
+	top: 90px;
 	width: auto;
 	height: auto;
+	max-height: 600px !important ;
+	/*max-height: 70% !important ;*/
 	white-space: nowrap;
+	border: 1px solid #D3D3D3;
+	overflow: scroll;
+}
+
+.legendEntry {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+/* Force scroll bar to appear on mac webkit browsers */
+#legend::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 7px;
+}
+#legend::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, .2);
+	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
 
 /* color labels for legend */
@@ -34,7 +64,7 @@ p,h1,a {
 }
 
 #icons-div {
-	width: 50%;
+	width: 60%;
 	float: left;
 }
 
@@ -103,9 +133,38 @@ p,h1,a {
 }
 /* end toolitp for 'buttons' */
 
+/* The alert message box */
+.alert {
+	padding: 20px;
+	font-family: Helvetica; 
+	background-color: #DA291C;
+	color: white;
+	margin-bottom: 15px;
+	position: absolute;
+	z-index: 999;
+	visibility: hidden;
+}
 
+/* The close button for alert message box */
+.closebtn {
+	margin-left: 15px;
+	color: white;
+	font-weight: bold;
+	float: right;
+	font-size: 22px;
+	line-height: 20px;
+	cursor: pointer;
+}
 
+/* When moving the mouse over the close button */
+.closebtn:hover {
+	color: black;
+}
 
-
-
+/* xyz 'on hover' labels */
+.xyz-label {
+	font-style: italic;
+	font-family: "Times New Roman", Times, serif; 
+	font-size: 20px;
+}
 

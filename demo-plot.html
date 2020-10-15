@@ -26,15 +26,20 @@
 						backgroundColor: 'ivory',
 						showOriginAxes: 'true'
 					}
-					Plot3D.createPlot(data.slice(0,300), plotOptions);
-					function redraw() {
+					Plot3D.createPlot(data, plotOptions);
+					//Plot3D.createPlot(data.slice(0,300), plotOptions);
+					window.redraw = function redraw() {
 						plotOptions.showOriginAxes = 'false'
 						plotOptions.colorAxes = 'off'
 						plotOptions.yLabel = 'Y'
 						plotOptions.zLabel = 'Z'
 						Plot3D.createPlot(data.slice(400,500), plotOptions);
 					}
-					window.redraw = redraw;
+					window.reset = function reset() {
+						Plot3D.setRadius(Plot3D.spherical.r)
+						Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
+						Plot3D.setPolarAngle(Plot3D.spherical.phi)
+					}
 				})
 			})
 			// using the stats module from https://threejs.org/examples/misc_boxselection.html
@@ -63,18 +68,27 @@
 	</head>
 	<body>
 		<div id="icons-div">
-			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon' style='visibility:hidden;'>
+			<img src='img/orbit-controls.png' id='orbit-controls-icon' class='icon'>
 			<span class='button-tooltip' id='orbit-controls-tooltip'>Zoom with mouse wheel; rotate by holding down the mouse and dragging.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
-			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon' style='visibility:hidden;'>
+			<img src='img/drag-to-select.png' id='drag-to-select-icon' class='icon'>
 			<span class='button-tooltip' id='drag-to-select-tooltip'>Drag a rectangle to select points. Hold down comand key to select more than one region.<br><br>Click "s" to toggle between Zoom/Rotate and Select.</span>
 			<button type='button' onclick='redraw()'>Click Me</button>
+			<button type='button' onclick='reset()'>Reset</button>
+			<label class='sphericalLabel' for='radiusValue'>r:</label><input type='text' id='radiusValue' style="width:30px;" />
+			<label class='sphericalLabel' for='azimuthalValue'>&theta;:</label><input type='text' id='azimuthalValue' style="width:30px;" />
+			<label class='sphericalLabel' for='polarValue'>&phi;:</label><input type='text' id='polarValue' style="width:30px;" />
 		</div>
 		<div id='name-coords-div'>
 				<p id='point-name'></p>
 				<p id='show-hover-point-coords'></p>
 		</div>
-		<canvas id='scatter-plot-3d-canvas' style='visibility:hidden;'></canvas>
-		<div id='legend' width="200" height="500">
+		<div class='flexcontainer'>
+			<canvas id='scatter-plot-3d-canvas' style='visibility:hidden;'></canvas>
+			<div id='legend' style='visibility:hidden;' width="200" height="500"></div>
+		</div>
+		<div class="alert" id='myAlert'>
+			<span class="closebtn" onclick="this.parentElement.style.visibility='hidden';">&times;</span>
+			<span id='alertMessage'></span>
 		</div>
 	</body>
 

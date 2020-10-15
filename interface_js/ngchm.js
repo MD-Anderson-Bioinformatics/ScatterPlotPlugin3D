@@ -29,8 +29,8 @@ export var VAN = new Vanodi({
 	],
 	options: [
 		{ label: 'Show Origin Axes', type: 'dropdown', choices: [
-			{label: 'Yes', value: true},
-			{label: 'No', value: false}
+			{label: 'Yes', value: 'yes'},
+			{label: 'No', value: 'no'}
 		], helpText: 'Display XYZ axes at origin'},
 		{ label: 'Color Axes', type: 'dropdown', choices: [
 			{label: 'On', value: 'on'},
@@ -49,6 +49,13 @@ export var VAN = new Vanodi({
 			{label: 'Blue', value: 'blue'}, 
 			{label: 'Pink', value: 'hotpink'}
 		], helpText: 'Color for highlighting points under cursor or selected from NGCHM'},
+		{ label: 'Legend Hover Transparency', type: 'dropdown', choices: [
+			{label: 'Medium', value: 0.2},
+			{label: 'Complete', value: 0.0},
+			{label: 'Faint', value: 0.1},
+			{label: 'Dark', value: 0.5},
+			{label: 'None', value: 1.0}
+		], helpText: 'For hovering over legend: transparency of non-hovered groups.'},
 		{ label: 'Point Size', type: 'dropdown', choices: [
 			{label: 'Medium', value: 0.1},
 			{label: 'Small', value: 0.04},
@@ -64,6 +71,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 		zLabel: vanodi.config.axes[0].coordinates[2].label, 
 		backgroundColor: vanodi.config.options['Background Color'],
 		highlightColor: vanodi.config.options['Highlight Color'],
+		hoverOpacity: vanodi.config.options['Legend Hover Transparency'],
 		pointSize: vanodi.config.options['Point Size'],
 		showOriginAxes: vanodi.config.options['Show Origin Axes'],
 		colorAxes: vanodi.config.options['Color Axes'],

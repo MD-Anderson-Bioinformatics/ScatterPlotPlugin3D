@@ -13,7 +13,10 @@ import {drawLegend} from './js/legend.js'
 */
 export const Plot3D = {
 	createPlot,
-	getMouseXYZ
+	getMouseXYZ,
+	setPolarAngle,
+	setAzimuthalAngle,
+	setRadius
 };
 
 Plot3D.selectedPointIds = []
@@ -35,6 +38,53 @@ function getMouseXYZ(event) {
 		x: (relativePosition.x / Plot3D.mainCanvas.width) * 2 - 1,
 		y: (relativePosition.y / Plot3D.mainCanvas.height) * -2 + 1,
 		z: 0.5
+	}
+}
+
+/* Function to validate input is numeric
+
+	A warning message is displayed if the value is not numeric
+*/
+function validateNumericInput(value) {
+	if (isNaN(value)) {
+		document.getElementById('alertMessage').innerHTML = 'A numeric value is required' 
+		document.getElementById('myAlert').style.visibility = 'visible';
+		return false;
+	} else {
+		document.getElementById('myAlert').style.visibility = 'hidden';
+		return true;
+	}
+}
+
+/* Function to save spherical coordiantes of OrbitControls
+
+	Saves the r, theta, and phi of the current OrbitControls
+	to Plot3D.spherical.
+	(these can be used to reset the rotation/zoom)
+*/
+function saveSphericalCoordinates() {
+	Plot3D.spherical = {
+		r: Plot3D.controls.getRadius(),
+		theta: Plot3D.controls.getAzimuthalAngle(),
+		phi: Plot3D.controls.getPolarAngle()
+	}
+}
+
+/* Function to set spherical cooridinates of OrbitControls
+
+	Sets the r, theta, and phi of OrbitControls using the values
+	in Plot3D.spherical if defined, otherwise initializes them to
+	reasonable initial values.
+*/
+function setSphericalCoordinates() {
+	if (typeof Plot3D.spherical !== 'undefined') {
+		Plot3D.setRadius(Plot3D.spherical.r)
+		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
+		Plot3D.setPolarAngle(Plot3D.spherical.phi)
+	} else {
+		Plot3D.setRadius(26)
+		Plot3D.setAzimuthalAngle(0)
+		Plot3D.setPolarAngle(Math.PI/2)
 	}
 }
 
@@ -63,10 +113,11 @@ function initializePlotOptions(plotOptions) {
 	op.plotTitle = plotOptions.hasOwnProperty('plotTitle') ? plotOptions.plotTitle : 'Plot Title';
 	op.legendTitle = plotOptions.hasOwnProperty('legendTitle') ? plotOptions.legendTitle : 'Legend Title';
 	op.colorAxes = plotOptions.hasOwnProperty('colorAxes') ? plotOptions.colorAxes : 'on';
+	op.hoverOpacity = plotOptions.hasOwnProperty('hoverOpacity') ? plotOptions.hoverOpacity : 0.3;
 	if (plotOptions.hasOwnProperty('showOriginAxes')) {
-		op.showOriginAxes = (plotOptions.showOriginAxes == 'true')
+		op.showOriginAxes = plotOptions.showOriginAxes 
 	} else {
-		op.showOriginAxes = true
+		op.showOriginAxes = 'yes'
 	}
 	return op
 }
@@ -186,6 +237,7 @@ function initializeScene() {
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
+	setSphericalCoordinates()
 }
 
 function createScales(dataPoints) {
@@ -212,6 +264,73 @@ window.addEventListener('resize', () => {
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 }, false)
 
+/* Function to set 'zoom level'
+
+	Orbit controls for a PerspectiveCamera use dollyIn and dollyOut
+	rather than zoom. There is also no public function to set the
+	dollyIn/Out level. This function provides a workaround by temporarily 
+	setting the min and max values to the input radius.
+
+	Inputs:
+		radius: floating point number to set the zoom level. Higher
+		        numbers set the camera farther than smaller numbers
+*/
+function setRadius(radius) {
+	Plot3D.controls.minDistance = radius
+	Plot3D.controls.maxDistance = radius
+	Plot3D.controls.update()
+	Plot3D.controls.minDistance = 0
+	Plot3D.controls.maxDistance = 40
+}
+
+/* Function to set polar angle
+
+	OrbitControls doesn't have an explicit function to set the 
+	polar angle. This function provides a workaround by temporarily
+	setting the min and max values to the input angle
+	
+	Inputs:
+		angle: polar angle (phi) in radians
+*/
+function setPolarAngle(angle) {
+	angle %= Math.PI
+	Plot3D.controls.minPolarAngle = angle
+	Plot3D.controls.maxPolarAngle = angle
+	Plot3D.controls.update();
+	Plot3D.controls.minPolarAngle = 0
+	Plot3D.controls.maxPolarAngle = Math.PI 
+}
+
+/* Function to set azimuthal angle
+
+	Orbit controls doesn't have an explicit function to set the
+	azimuthal angle. This function provides a workaround by temporarily
+	setting the min and max values to the input angle
+	
+	Inputs:
+		angle: azimuthal angle (theta) in radians
+*/
+function setAzimuthalAngle(angle) {
+	Plot3D.controls.minAzimuthAngle = angle
+	Plot3D.controls.maxAzimuthAngle = angle
+	Plot3D.controls.update();
+	Plot3D.controls.minAzimuthAngle = -2*Math.PI
+	Plot3D.controls.maxAzimuthAngle = 2*Math.PI
+}
+
+/* Function to display spherical coordinate of OrbitControls
+
+	Displays the polar (phi), azimuthal (theta), and radius (akin to zoom level)
+	on the corresponding DOM input elements.
+*/
+function displayAngles() {
+	try {
+		document.getElementById('polarValue').value = (Plot3D.controls.getPolarAngle() * 180 / Math.PI).toFixed(0)
+		document.getElementById('azimuthalValue').value = (Plot3D.controls.getAzimuthalAngle() * 180 / Math.PI).toFixed(0)
+		document.getElementById('radiusValue').value = Plot3D.controls.getRadius().toFixed(1)
+	} catch(err) {}
+}
+
 /* Main function to create 3-d scatter plot. Exported 
 
   Inputs:
@@ -223,6 +342,7 @@ function createPlot(data, _plotOptions) {
 	Plot3D.plotOptions = initializePlotOptions(_plotOptions)
 	Plot3D.plotDrawParams = initializePlotDrawParams()
 	initializeScene();
+
 
 	let dataPoints = organizeData(data)
 	Plot3D.geometriesMaterials = createGeometriesAndMaterials([...new Set(dataPoints.map(p=>{return p.color}))])
@@ -238,11 +358,10 @@ function createPlot(data, _plotOptions) {
 		Plot3D.scene.add(ptObject)
 	})
 	addBoxAxes();
-	if (Plot3D.plotOptions.showOriginAxes) {
+	if (Plot3D.plotOptions.showOriginAxes == 'yes') {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
-	Plot3D.camera.position.z = 30; // was 25
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
 	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
@@ -273,19 +392,24 @@ function createPlot(data, _plotOptions) {
 			document.getElementById('orbit-controls-icon').classList.add('selected-icon')
 		}
 	})
-	document.getElementById('orbit-controls-icon').style.visibility = 'visible'
-	document.getElementById('drag-to-select-icon').style.visibility = 'visible'
+	document.getElementById('icons-div').style.visibility = 'visible'
 	document.getElementById('orbit-controls-icon').click()
 	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
 	initDragToSelect();
 	HoverHelper.initHoverToHighlight();
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
+	Plot3D.controls.update()
+	displayAngles()
 
-	/* Render scene whenever user moves scene (e.g. pan, zoom) */
+	/* Event listener to render scene whenever user moves scene (e.g. pan, zoom) */
 	Plot3D.controls.addEventListener( 'change', () => { 
-		Plot3D.renderer.render( Plot3D.scene, Plot3D.camera ) 
+		setTimeout(function() {
+			Plot3D.renderer.render(Plot3D.scene,Plot3D.camera)
+		}, 100)
+		displayAngles()
 	});
-	/* Hide the point name/coords div when user is rotating/zooming */
+
+	/* Event listeners to hide the point name/coords div when user is rotating/zooming */
 	Plot3D.controls.addEventListener('start', () => {
 		document.getElementById('name-coords-div').style.visibility = 'hidden';
 		Plot3D.disableHoverHighlight = true;
@@ -294,6 +418,24 @@ function createPlot(data, _plotOptions) {
 	Plot3D.controls.addEventListener('end', () => {
 		document.getElementById('name-coords-div').style.visibility = 'visible';
 		Plot3D.disableHoverHighlight = false;
+		displayAngles()
+		saveSphericalCoordinates()
+	})
+	/* Event listeners for changing the OrbitControls based on user input */
+	document.getElementById('radiusValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
+		let r = parseFloat(this.value)
+		setRadius(r)
+	})
+	document.getElementById('azimuthalValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
+		let theta = parseFloat(this.value) * Math.PI / 180
+		setAzimuthalAngle(theta)
+	})
+	document.getElementById('polarValue').addEventListener('change', function(event) {
+		if (!validateNumericInput(this.value)) { return false; }
+		let phi = parseFloat(this.value) * Math.PI / 180
+		setPolarAngle(phi)
 	})
 } // end exported function createPlot
 

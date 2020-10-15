@@ -51,12 +51,15 @@ export function drawLegend(data) {
 	while (legendDiv.firstChild) {
 		legendDiv.removeChild(legendDiv.firstChild)
 	}
+	legendDiv.style.visibility = 'visible';
 	let pNode = document.createElement('p')
+	pNode.style.padding = '0 5px 0 5px'
 	let textNode = document.createTextNode(Plot3D.plotOptions.legendTitle)
 	pNode.appendChild(textNode)
 	legendDiv.appendChild(pNode)
 	for (const [key, value] of Object.entries(colorMap)) {
 		let pNode = document.createElement('p')
+		pNode.classList.add('legendEntry')
 		let circleNode = document.createElement('span')
 		circleNode.classList.add('circle')
 		circleNode.style.backgroundColor = value
@@ -64,5 +67,38 @@ export function drawLegend(data) {
 		let textNode = document.createTextNode(key)
 		pNode.appendChild(textNode)
 		legendDiv.appendChild(pNode)
+		/* hover over legend item will make non-group points translucent */
+		pNode.addEventListener('mouseover',function(event) {
+			for (const [materialKey, materialValue] of 
+					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+				if (materialKey !== value) {
+					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = Plot3D.plotOptions.hoverOpacity;
+					Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = true
+				}
+			}
+			/* If transparency is off, don't make other legend entries transparent */
+			if (Plot3D.plotOptions.hoverOpacity != 1) {
+				let legendEntries = document.getElementsByClassName('legendEntry')
+				for (let le of legendEntries) {
+					if (le != this) {
+						le.style.opacity = 0.5
+					}
+				}
+			}
+		})
+		/* undo that translucency */
+		pNode.addEventListener('mouseout',function(event) {
+			for (const [materialKey, materialValue] of 
+					Object.entries(Plot3D.geometriesMaterials.dataPoints.groupMaterials)) {
+				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].opacity = 1
+				Plot3D.geometriesMaterials.dataPoints.groupMaterials[materialKey].transparent = false
+			}
+			if (Plot3D.plotOptions.hoverOpacity != 1) {
+				let legendEntries = document.getElementsByClassName('legendEntry')
+				for (let le of legendEntries) {
+					le.style.opacity = 1;
+				}
+			}
+		})
 	}
 }
