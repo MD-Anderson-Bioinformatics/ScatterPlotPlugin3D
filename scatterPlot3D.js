@@ -115,9 +115,9 @@ function initializePlotOptions(plotOptions) {
 	op.colorAxes = plotOptions.hasOwnProperty('colorAxes') ? plotOptions.colorAxes : 'on';
 	op.hoverOpacity = plotOptions.hasOwnProperty('hoverOpacity') ? plotOptions.hoverOpacity : 0.3;
 	if (plotOptions.hasOwnProperty('showOriginAxes')) {
-		op.showOriginAxes = (plotOptions.showOriginAxes == 'true')
+		op.showOriginAxes = plotOptions.showOriginAxes 
 	} else {
-		op.showOriginAxes = true
+		op.showOriginAxes = 'yes'
 	}
 	return op
 }
@@ -358,7 +358,7 @@ function createPlot(data, _plotOptions) {
 		Plot3D.scene.add(ptObject)
 	})
 	addBoxAxes();
-	if (Plot3D.plotOptions.showOriginAxes) {
+	if (Plot3D.plotOptions.showOriginAxes == 'yes') {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
