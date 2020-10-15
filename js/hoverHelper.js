@@ -74,6 +74,10 @@ class PickHelper {
 	/* Function to find data point under mouse
 	   Casts a ray through the Plot3D.camera frustrum, gets list of objects intersectec
 	   by the ray, and chooses the closest point to the Plot3D.camera to pick.
+	
+	   NB: For performance reasonse this function does not render the 
+	   scene after making changes. The renderer must be invoked in
+	   order to see the changes.
 	*/
 	pick(normalizedPosition) {
 		if (this.pickedObject) {
@@ -87,7 +91,6 @@ class PickHelper {
 				this.highlightPoint(this.pickedObject)
 				this.showTooltip(this.pickedObject.userData.id)
 				this.showXYZ(this.pickedObject.userData.coordinates)
-				Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 				break
 			}
 		}
@@ -96,6 +99,10 @@ class PickHelper {
 	/* Function to highlight point
 	   Moves the hlObject to the location of datapoint pt and makes it visible,
 	   and sends 'selectLabels' message to parent
+	
+	   NB: For performance reasonse this function does not render the 
+	   scene after making changes. The renderer must be invoked in
+	   order to see the changes.
 	*/
 	highlightPoint(pt) {
 		this.hlObject.position.set(pt.position.x, pt.position.y, pt.position.z)
@@ -103,18 +110,21 @@ class PickHelper {
 		this.hlObject.userData.id = pt.userData.id
 		this.hlObject.name = 'highlight ' + pt.userData.id
 		this.hlObject.visible = true
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		let tmpSelectedPointIds = Plot3D.selectedPointIds.slice()
 		tmpSelectedPointIds.push(pt.userData.id)
 		this.postSelectLabels(tmpSelectedPointIds,'ctrlClick')
 	}
 
-	/* Function to clear highlighted points */
+	/* Function to clear highlighted points 
+	
+	   NB: For performance reasonse this function does not render the 
+	   scene after making changes. The renderer must be invoked in
+	   order to see the changes.
+	*/
 	clearHighlightedPoints() {
 		this.hlObject.visible = false
 		this.hideTooltip()
 		this.hideXYZ()
-		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		this.postSelectLabels(Plot3D.selectedPointIds, 'ctrlClick')
 	}
 
