@@ -53,6 +53,7 @@ export function drawLegend(data) {
 	}
 	legendDiv.style.visibility = 'visible';
 	let pNode = document.createElement('p')
+	pNode.style.padding = '0 5px 0 5px'
 	let textNode = document.createTextNode(Plot3D.plotOptions.legendTitle)
 	pNode.appendChild(textNode)
 	legendDiv.appendChild(pNode)
