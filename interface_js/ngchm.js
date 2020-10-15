@@ -29,8 +29,8 @@ export var VAN = new Vanodi({
 	],
 	options: [
 		{ label: 'Show Origin Axes', type: 'dropdown', choices: [
-			{label: 'Yes', value: true},
-			{label: 'No', value: false}
+			{label: 'Yes', value: 'yes'},
+			{label: 'No', value: 'no'}
 		], helpText: 'Display XYZ axes at origin'},
 		{ label: 'Color Axes', type: 'dropdown', choices: [
 			{label: 'On', value: 'on'},
