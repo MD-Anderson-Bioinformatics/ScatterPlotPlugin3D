@@ -82,7 +82,7 @@ function setSphericalCoordinates() {
 		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
 		Plot3D.setPolarAngle(Plot3D.spherical.phi)
 	} else {
-		Plot3D.setRadius(30)
+		Plot3D.setRadius(26)
 		Plot3D.setAzimuthalAngle(0)
 		Plot3D.setPolarAngle(Math.PI/2)
 	}
