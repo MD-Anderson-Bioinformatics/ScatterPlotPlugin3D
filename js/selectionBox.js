@@ -57,7 +57,7 @@ export function initDragToSelect() {
 		VAN.postMessage({ 
 			op: 'selectLabels',
 			selection: {
-				axis: 'column',
+				axis: Plot3D.ngchmAxis,
 				pointIds: Plot3D.selectedPointIds,
 				clickType: 'ctrlClick'
 			}
