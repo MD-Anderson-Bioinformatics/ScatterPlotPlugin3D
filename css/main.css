@@ -1,6 +1,7 @@
 
 body { 
 	margin: 0; 
+	min-width: 700px;
 }
 
 p,h1,a { 
@@ -21,19 +22,20 @@ p,h1,a {
 #scatter-plot-3d-canvas { 
 	margin-left: 3%;
 	margin-right: 3%;
-	width: 80% !important ;
-	height: 80% !important ;
-	max-width: 850px;
+	width: 95% !important ;
+	height: 95% !important ;
 	min-width: 250px;
+	min-height: 250px;
+	border: 1px solid #D3D3D3;
 }
 
 #legend {
 	top: 90px;
 	width: auto;
 	height: auto;
-	max-height: 600px !important ;
-	/*max-height: 70% !important ;*/
-	white-space: nowrap;
+	max-height: 600px;
+	max-width: 20%;
+	margin-right: 3%;
 	border: 1px solid #D3D3D3;
 	overflow: scroll;
 }
@@ -41,6 +43,12 @@ p,h1,a {
 .legendEntry {
 	padding-left: 5px;
 	padding-right: 5px;
+	font-size: min(2vw,20px);
+	white-space: nowrap;
+}
+
+.legendTitle {
+	font-size: min(2.2vw,24px);
 }
 
 /* Force scroll bar to appear on mac webkit browsers */
@@ -56,8 +64,9 @@ p,h1,a {
 
 /* color labels for legend */
 .circle {
-	height: 10pt;
-	width: 10pt;
+	height: min(2vw,20px);
+	width: min(2vw,20px);
+	margin-left: 5pt;
 	margin-right: 5pt;
 	border-radius: 50%;
 	display: inline-block;

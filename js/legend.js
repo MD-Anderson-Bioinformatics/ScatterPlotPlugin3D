@@ -56,6 +56,7 @@ export function drawLegend(data) {
 	pNode.style.padding = '0 5px 0 5px'
 	let textNode = document.createTextNode(Plot3D.plotOptions.legendTitle)
 	pNode.appendChild(textNode)
+	pNode.classList.add('legendTitle')
 	legendDiv.appendChild(pNode)
 	for (const [key, value] of Object.entries(colorMap)) {
 		let pNode = document.createElement('p')
