@@ -24,7 +24,8 @@ p,h1,a {
 	margin-right: 3%;
 	width: 95% !important ;
 	height: 95% !important ;
-	min-width: 250px;
+	max-height: min(95%, 500px);
+	min-width: 600px;
 	min-height: 250px;
 	border: 1px solid #D3D3D3;
 }
@@ -34,7 +35,8 @@ p,h1,a {
 	width: auto;
 	height: auto;
 	max-height: 600px;
-	max-width: 20%;
+	max-width: min(20%,200px);
+	min-width: 100px;
 	margin-right: 3%;
 	border: 1px solid #D3D3D3;
 	overflow: scroll;
@@ -43,20 +45,31 @@ p,h1,a {
 .legendEntry {
 	padding-left: 5px;
 	padding-right: 5px;
-	font-size: min(2vw,20px);
+	font-size: 16px;
+	font-size: min(max(12px, 2vw), 18px);
 	white-space: nowrap;
 }
 
 .legendTitle {
-	font-size: min(2.2vw,24px);
+	font-size: 18px;
+	font-size: min(max(14px, 2vw), 20px);
 }
 
-/* Force scroll bar to appear on mac webkit browsers */
+/* Force scroll bar to appear on mac webkit browsers in legend and body */
 #legend::-webkit-scrollbar {
 	-webkit-appearance: none;
 	width: 7px;
 }
 #legend::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, .2);
+	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+body::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 7px;
+}
+body::-webkit-scrollbar-thumb {
 	border-radius: 4px;
 	background-color: rgba(0, 0, 0, .2);
 	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
