@@ -4,11 +4,10 @@
 import {Plot3D} from '../scatterPlot3D.js';
 
 
-/* Function to return batch list of unique batch names
+/* Function to return batch list of sorted unique batch names
 
-	The gymnastics in the return statement gets the unique group names
-	from the input data and sorts them. The sort is numerically correct 
-	(i.e. -0.03 comes before -0.8) and case insensitive.
+	The sort is numerically correct (i.e. -0.03 comes before -0.8) 
+	and case insensitive.
 
 	Inputs:
 		data: data for plot
@@ -16,7 +15,12 @@ import {Plot3D} from '../scatterPlot3D.js';
 		list of unique batch names
 */
 function getBatchIds(data) {
-	return [...new Set(data.map(p=>{return p.group}))].sort(function(a,b) {return (a.toLowerCase() > b.toLowerCase() ? 1 : -1)});
+	let uniqueBatchIds = [...new Set(data.map(p=>{return p.group}))]
+	if (uniqueBatchIds.some( b => isNaN(parseFloat(b)) ) ) { // then treat batch ids as strings
+		return uniqueBatchIds.sort(function(a,b) {return (a.toLowerCase() > b.toLowerCase() ? 1 : -1)});
+	} else { // treat batch ids as numbers
+		return uniqueBatchIds.sort(function(a,b) {return (parseFloat(a) > parseFloat(b) ? 1 : -1)});
+	}
 }
 
 /* Function to return color map
