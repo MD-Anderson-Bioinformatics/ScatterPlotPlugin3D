@@ -34,12 +34,13 @@ export function initDragToSelect() {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		helper.element.hidden = false;
 		if (helper.isDown) {
+			clearTmpSpheres()
 			let pos = Plot3D.getMouseXYZ(event)
 			selectionBox.endPoint.set(pos.x, pos.y, pos.z)
 			selectionBox.select().forEach(pt => {
 				let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
 				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
-				sphere.userData.type = 'select sphere'
+				sphere.userData.type = 'select sphere tmp'
 				Plot3D.scene.add(sphere)
 			})
 			Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
@@ -51,9 +52,14 @@ export function initDragToSelect() {
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
-		selectionBox.select().forEach(a => {
-			Plot3D.selectedPointIds.push(a.userData.id)
+		selectionBox.select().forEach(pt => {
+			let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
+			sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
+			sphere.userData.type = 'select sphere'
+			Plot3D.scene.add(sphere)
+			Plot3D.selectedPointIds.push(pt.userData.id)
 		})
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		VAN.postMessage({ 
 			op: 'selectLabels',
 			selection: {
@@ -70,6 +76,14 @@ function clearSelectedSpheres() {
 	Plot3D.selectedPointIds = []
 	while (Plot3D.scene.getObjectByUserDataProperty('type','select sphere') != undefined) {
 		let sphere = Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere')
+		Plot3D.scene.remove(sphere)
+	}
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+}
+
+function clearTmpSpheres() {
+	while (Plot3D.scene.getObjectByUserDataProperty('type','select sphere tmp') != undefined) {
+		let sphere = Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere tmp')
 		Plot3D.scene.remove(sphere)
 	}
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
