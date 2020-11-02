@@ -237,6 +237,7 @@ function initializeScene() {
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
+	Plot3D.controls.enablePan = false
 	setSphericalCoordinates()
 }
 
