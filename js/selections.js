@@ -34,7 +34,7 @@ THREE.Object3D.prototype.getObjectByUserDataProperty = function ( name, value ) 
 /* Function to select points 
 
 	Creates spheres to highlight selected points from the pointsList input.
-	The spheres have userData.typ = 'select sphere', which is used for removing
+	The spheres have userData.type = 'select sphere', which is used for removing
 	them in clearSelectedPoints()
 
 	This function is mostly for showing points selected on the NGCHM
