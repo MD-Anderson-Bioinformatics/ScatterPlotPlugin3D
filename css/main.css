@@ -40,6 +40,7 @@ p,h1,a {
 	margin-right: 3%;
 	border: 1px solid #D3D3D3;
 	overflow: scroll;
+	user-select: none;
 }
 
 .legendEntry {
@@ -88,6 +89,7 @@ body::-webkit-scrollbar-thumb {
 #icons-div {
 	width: 60%;
 	float: left;
+	user-select: none;
 }
 
 #name-coords-div {

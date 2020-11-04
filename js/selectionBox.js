@@ -49,6 +49,8 @@ export function initDragToSelect() {
 	/* drag end */
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseup', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		if (helper.mouseLeft == true) {return false}
+		clearTmpSpheres()
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
@@ -68,6 +70,11 @@ export function initDragToSelect() {
 				clickType: 'ctrlClick'
 			}
 		})
+	})
+	/* cancel selection if mouse moves off canvas */
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseout', function(event) {
+		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		clearTmpSpheres()
 	})
 } // end function initDragToSelect
 
@@ -193,10 +200,12 @@ class SelectionHelper {
 		this.element.style.pointerEvents = 'none'
 		this.startPoint = new THREE.Vector2()
 		this.isDown = false;
+		this.mouseLeft = false;
 		this.renderer = renderer;
 		/* Starts draw of helper box (.selectBox) */
 		this.renderer.domElement.addEventListener('mousedown', e => {
 			this.isDown = true;
+			this.mouseLeft = false;
 			this.renderer.domElement.parentElement.appendChild(this.element)
 			this.element.style.left = e.clientX + 'px'
 			this.element.style.top = e.clientY + 'px'
@@ -219,7 +228,17 @@ class SelectionHelper {
 		/* Remove helper box (.selectBox) */
 		this.renderer.domElement.addEventListener('mouseup', e => {
 			this.isDown = false
-			this.element.parentElement.removeChild(this.element)
+			if (typeof(this.element.parentElement) != 'undefined' && this.element.parentElement != null) {
+				this.element.parentElement.removeChild(this.element)
+			}
+		})
+		/* Remove helper box (.selectBox) */
+		this.renderer.domElement.addEventListener('mouseout', e => {
+			this.isDown = false
+			this.mouseLeft = true
+			if (typeof(this.element.parentElement) != 'undefined' && this.element.parentElement != null) {
+				this.element.parentElement.removeChild(this.element)
+			}
 		})
 	}
 } // end class Selection Helper
