@@ -87,13 +87,13 @@ body::-webkit-scrollbar-thumb {
 }
 
 #icons-div {
-	width: 60%;
+	width: 320px;
 	float: left;
 	user-select: none;
 }
 
 #name-coords-div {
-	margin-left: 50%;
+	margin-left: 20px;
 	padding-right: 20px;
 	margin-right: 20px;
 }
@@ -103,6 +103,7 @@ body::-webkit-scrollbar-thumb {
 	text-align: right;
 	font-size: 16px;
 	font-weight: bold;
+	overflow: auto;
 }
 #show-hover-point-coords{
 	height: 16px;
