@@ -6,6 +6,7 @@ import {HoverHelper} from './js/hoverHelper.js';
 import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
 import {initDragToSelect} from './js/selectionBox.js';
 import {drawLegend} from './js/legend.js'
+import {SelectPoints} from './js/selections.js';
 
 
 /* Expored Plot3D object containes the function listed here,
@@ -363,6 +364,7 @@ function createPlot(data, _plotOptions) {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
+	SelectPoints.selectPoints(Plot3D.selectedPointIds)
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
 	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
