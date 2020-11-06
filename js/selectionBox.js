@@ -75,25 +75,19 @@ export function initDragToSelect() {
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseout', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		clearTmpSpheres()
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 	})
 } // end function initDragToSelect
 
 
 function clearSelectedSpheres() {
 	Plot3D.selectedPointIds = []
-	while (Plot3D.scene.getObjectByUserDataProperty('type','select sphere') != undefined) {
-		let sphere = Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere')
-		Plot3D.scene.remove(sphere)
-	}
+	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere')
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 }
 
 function clearTmpSpheres() {
-	while (Plot3D.scene.getObjectByUserDataProperty('type','select sphere tmp') != undefined) {
-		let sphere = Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere tmp')
-		Plot3D.scene.remove(sphere)
-	}
-	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere tmp')
 }
 
 /*

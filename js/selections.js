@@ -31,6 +31,25 @@ THREE.Object3D.prototype.getObjectByUserDataProperty = function ( name, value ) 
 	return undefined;
 }
 
+/*
+	Prototype function to remove scene objects based on UserData property
+	
+	Traverses the scene and removes elements from the scene with UserData 
+	property 'name' = 'value'
+*/
+THREE.Object3D.prototype.removeObjectsByUserDataProperty = function ( name, value ) {
+	let listToRemove = []
+	Plot3D.scene.traverse(function(sceneObject) {
+		if (sceneObject.userData.hasOwnProperty(name) && sceneObject.userData[name] == value) {
+			listToRemove.push(sceneObject)
+		}
+	})
+	for (let i=0; i<listToRemove.length; i++) {
+		Plot3D.scene.remove(listToRemove[i])
+	}
+	return
+}
+
 /* Function to select points 
 
 	Creates spheres to highlight selected points from the pointsList input.
@@ -62,10 +81,7 @@ function selectPoints(pointsList) {
 */
 function clearSelectedPoints() {
 	if (Plot3D.scene == undefined) {return}
-	while (Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere') != undefined) {
-		let sphere = Plot3D.scene.getObjectByUserDataProperty('type','select sphere')
-		Plot3D.scene.remove(sphere)
-	}
+	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere')
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 }
 
