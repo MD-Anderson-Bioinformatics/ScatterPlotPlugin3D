@@ -533,10 +533,23 @@ THREE.OrbitControls = function ( object, domElement ) {
 	//
 	scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
 	scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	scope.domElement.addEventListener( 'wheel', onMouseWheel, false );
-	scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
-	scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
-	scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
+
+	// Test via a getter in the options object to see if the passive property is accessed
+	// and if so, make the event listeners below passive.
+	let supportsPassive = false;
+	try {
+		let opts = Object.defineProperty({}, 'passive', {
+			get: function() {
+				supportsPassive = true;
+			}
+		});
+		window.addEventListener("testPassive", null, opts);
+		window.removeEventListener("testPassive", null, opts);
+	} catch (e) {}
+	scope.domElement.addEventListener( 'wheel', onMouseWheel, supportsPassive ? {passive: true} : false);
+	scope.domElement.addEventListener( 'touchstart', onTouchStart, supportsPassive ? {passive: true} : false );
+	scope.domElement.addEventListener( 'touchend', onTouchEnd, supportsPassive ? {passive: true} : false );
+	scope.domElement.addEventListener( 'touchmove', onTouchMove, supportsPassive ? {passive: true} : false );
 	window.addEventListener( 'keydown', onKeyDown, false );
 	// force an update at start
 	this.update();
