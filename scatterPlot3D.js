@@ -356,6 +356,7 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.type = 'data point'
 		ptObject.userData.id = pt.id
 		ptObject.userData.group = pt.group
+		ptObject.userData.groupColor = pt.color
 		ptObject.userData.coordinates = {x: pt.x, y: pt.y, z: pt.z}
 		Plot3D.scene.add(ptObject)
 	})

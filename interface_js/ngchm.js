@@ -100,6 +100,6 @@ VAN.addMessageListener ('makeHiLite', function hiliteMessageHandler (vanodi) {
 	if (Plot3D.ngchmAxis && Plot3D.ngchmAxis.toLowerCase() != vanodi.data.axis.toLowerCase()) {
 		return false;
 	}
-	SelectPoints.clearSelectedPoints();
+	SelectPoints.clearSelectedPointIds();
 	SelectPoints.selectPoints(vanodi.data.pointIds)
 });

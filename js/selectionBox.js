@@ -1,5 +1,6 @@
 import {Plot3D} from '../scatterPlot3D.js'
 import {VAN} from '../interface_js/ngchm.js'
+import {SelectPoints} from './selections.js'
 
 /*
 	This module contains code for selecting points by dragging the mouse
@@ -23,7 +24,7 @@ export function initDragToSelect() {
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mousedown', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		if (!event.metaKey && !event.ctrlKey) {
-			clearSelectedSpheres()
+			SelectPoints.clearSelectedPointIds(Plot3D.selectedPointIds)
 		} 
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
@@ -55,12 +56,9 @@ export function initDragToSelect() {
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
 		selectionBox.select().forEach(pt => {
-			let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
-			sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
-			sphere.userData.type = 'select sphere'
-			Plot3D.scene.add(sphere)
 			Plot3D.selectedPointIds.push(pt.userData.id)
 		})
+		SelectPoints.selectPoints(Plot3D.selectedPointIds)
 		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		VAN.postMessage({ 
 			op: 'selectLabels',
@@ -78,13 +76,6 @@ export function initDragToSelect() {
 		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 	})
 } // end function initDragToSelect
-
-
-function clearSelectedSpheres() {
-	Plot3D.selectedPointIds = []
-	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere')
-	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-}
 
 function clearTmpSpheres() {
 	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere tmp')

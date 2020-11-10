@@ -7,12 +7,20 @@ import {Plot3D} from '../scatterPlot3D.js'
 
 export const SelectPoints = {
 	selectPoints,
-	clearSelectedPoints
+	clearSelectedPointIds
 };
 
+/* Changes the geometry and material for the Mesh representing the points back to
+   its original value. (i.e. 'unselecting' them in the UI
+*/
 function clearSelectedPointIds() {
+	Plot3D.selectedPointIds.forEach(pt => {
+		let dataPoint = Plot3D.scene.getObjectByUserDataProperty('id', pt)
+		dataPoint.material = Plot3D.geometriesMaterials.dataPoints.groupMaterials[dataPoint.userData.groupColor]
+		dataPoint.geometry = Plot3D.geometriesMaterials.dataPoints.geometry;
+	})
+	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 	Plot3D.selectedPointIds = []
-	clearSelectedPoints();
 }
 
 /* Prototype function to select an object based on a userData property
@@ -52,9 +60,8 @@ THREE.Object3D.prototype.removeObjectsByUserDataProperty = function ( name, valu
 
 /* Function to select points 
 
-	Creates spheres to highlight selected points from the pointsList input.
-	The spheres have userData.type = 'select sphere', which is used for removing
-	them in clearSelectedPoints()
+	Changes the material and geometry of selected points to the selection
+	material and geometry.
 
 	This function is mostly for showing points selected on the NGCHM
 
@@ -65,23 +72,12 @@ function selectPoints(pointsList) {
 	if (Plot3D.plotOptions == undefined) { return }
 	clearSelectedPointIds();
 	pointsList.forEach(pt => {
-		let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
 		let dataPoint = Plot3D.scene.getObjectByUserDataProperty('id', pt)
-		sphere.position.set(dataPoint.position.x, dataPoint.position.y, dataPoint.position.z)
-		sphere.userData.type = 'select sphere'
-		Plot3D.scene.add(sphere)
+		dataPoint.material = Plot3D.geometriesMaterials.selection.material
+		dataPoint.geometry = Plot3D.geometriesMaterials.selection.geometry;
 		Plot3D.selectedPointIds.push(pt)
 	})
 	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 }
 
-/* Function to unselect points
-
-	Removes all objects with userData.type = 'select sphere' from scene.
-*/
-function clearSelectedPoints() {
-	if (Plot3D.scene == undefined) {return}
-	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere')
-	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
-}
 
