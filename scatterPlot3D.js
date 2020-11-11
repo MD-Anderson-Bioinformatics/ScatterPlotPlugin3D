@@ -260,6 +260,7 @@ function createScales(dataPoints) {
 
 /* redraw the plot with appropriate aspect ratio on window resize */
 window.addEventListener('resize', () => {
+	if (Plot3D.camera == undefined) {return}
 	Plot3D.camera.aspect = window.innerWidth / window.innerHeight;
 	Plot3D.camera.updateProjectionMatrix();
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
