@@ -20,8 +20,6 @@ export const Plot3D = {
 	setRadius
 };
 
-Plot3D.selectedPointIds = []
-
 /* Exported function to return mouse XYZ coordinates in the scene
 
 	Inputs:

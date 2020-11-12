@@ -90,6 +90,11 @@ VAN.addMessageListener('plot', function(vanodi) {
 		})
 	})
 	Plot3D.ngchmAxis = vanodi.config.axes[0].axisName;
+	if (vanodi.data.axes[0].hasOwnProperty('selectedLabels')) {
+		Plot3D.selectedPointIds = vanodi.data.axes[0].selectedLabels
+	} else {
+		Plot3D.selectedPointIds = []
+	}
 	Plot3D.createPlot(plotData,plotOptions)
 })
 

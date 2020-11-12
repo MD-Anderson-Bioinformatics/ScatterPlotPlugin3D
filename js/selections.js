@@ -14,7 +14,7 @@ export const SelectPoints = {
    its original value. (i.e. 'unselecting' them in the UI
 */
 function clearSelectedPointIds() {
-	if (Plot3D.renderer == undefined) { return }
+	if (Plot3D.renderer == undefined || Plot3D.selectedPointIds == undefined) { return }
 	Plot3D.selectedPointIds.forEach(pt => {
 		let dataPoint = Plot3D.scene.getObjectByUserDataProperty('id', pt)
 		dataPoint.material = Plot3D.geometriesMaterials.dataPoints.groupMaterials[dataPoint.userData.groupColor]
