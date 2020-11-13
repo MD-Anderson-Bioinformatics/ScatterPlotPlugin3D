@@ -26,6 +26,8 @@
 						backgroundColor: 'ivory',
 						showOriginAxes: 'true'
 					}
+					Plot3D.nonce = 'my-fake-nonce'
+					Plot3D.selectedPointIds = []
 					Plot3D.createPlot(data, plotOptions);
 					//Plot3D.createPlot(data.slice(0,300), plotOptions);
 					window.redraw = function redraw() {
