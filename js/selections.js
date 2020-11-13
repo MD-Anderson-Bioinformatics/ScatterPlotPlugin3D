@@ -65,12 +65,9 @@ THREE.Object3D.prototype.removeObjectsByUserDataProperty = function ( name, valu
 	material and geometry.
 
 	This function is mostly for showing points selected on the NGCHM
-
-	Input:
-		pointsList list of point ids to highlight 
 */
 function selectPoints(pointsList) {
-	if (Plot3D.plotOptions == undefined) { return }
+	if (Plot3D.plotOptions == undefined || pointsList == undefined) { return }
 	clearSelectedPointIds();
 	pointsList.forEach(pt => {
 		let dataPoint = Plot3D.scene.getObjectByUserDataProperty('id', pt)
