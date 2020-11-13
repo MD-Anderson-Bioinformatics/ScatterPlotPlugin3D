@@ -95,6 +95,7 @@ VAN.addMessageListener('plot', function(vanodi) {
 	} else {
 		Plot3D.selectedPointIds = []
 	}
+	Plot3D.nonce = vanodi.nonce
 	Plot3D.createPlot(plotData,plotOptions)
 })
 

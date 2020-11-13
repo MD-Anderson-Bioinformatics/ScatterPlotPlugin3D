@@ -58,7 +58,8 @@ function validateNumericInput(value) {
 /* Function to save spherical coordiantes of OrbitControls
 
 	Saves the r, theta, and phi of the current OrbitControls
-	to Plot3D.spherical.
+	to Plot3D.spherical and to session storage in the key/value pair:
+	nonce: JSON.stringify(Plot3D.spherical).
 	(these can be used to reset the rotation/zoom)
 */
 function saveSphericalCoordinates() {
@@ -67,16 +68,24 @@ function saveSphericalCoordinates() {
 		theta: Plot3D.controls.getAzimuthalAngle(),
 		phi: Plot3D.controls.getPolarAngle()
 	}
+	sessionStorage.setItem(Plot3D.nonce, JSON.stringify(Plot3D.spherical))
 }
 
 /* Function to set spherical cooridinates of OrbitControls
 
 	Sets the r, theta, and phi of OrbitControls using the values
-	in Plot3D.spherical if defined, otherwise initializes them to
+	in Plot3D.spherical if defined, otherwise use the values from sessionStorage
+	for this nonce if defined, otherwise set to
 	reasonable initial values.
 */
 function setSphericalCoordinates() {
+	let storedSphericalCoords = sessionStorage.getItem(Plot3D.nonce)
 	if (typeof Plot3D.spherical !== 'undefined') {
+		Plot3D.setRadius(Plot3D.spherical.r)
+		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
+		Plot3D.setPolarAngle(Plot3D.spherical.phi)
+	} else if (storedSphericalCoords != null) {
+		Plot3D.spherical = JSON.parse(storedSphericalCoords)
 		Plot3D.setRadius(Plot3D.spherical.r)
 		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
 		Plot3D.setPolarAngle(Plot3D.spherical.phi)
@@ -364,6 +373,7 @@ function createPlot(data, _plotOptions) {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
+	saveSphericalCoordinates()
 	SelectPoints.selectPoints(Plot3D.selectedPointIds)
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
@@ -396,6 +406,7 @@ function createPlot(data, _plotOptions) {
 		}
 	})
 	document.getElementById('icons-div').style.visibility = 'visible'
+	//document.getElementById('drag-to-select-icon').click()
 	document.getElementById('orbit-controls-icon').click()
 	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
 	initDragToSelect();
