@@ -150,7 +150,7 @@ class PickHelper {
 		VAN.postMessage({
 			op: 'selectLabels',
 			selection: {
-				axis: 'column',
+				axis: Plot3D.ngchmAxis,
 				pointIds: points,
 				clickType: clickType
 			}
