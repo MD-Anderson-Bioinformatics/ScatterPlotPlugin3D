@@ -435,6 +435,9 @@ function createPlot(data, _plotOptions) {
 		displayAngles()
 		saveSphericalCoordinates()
 	})
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseout', function(event) {
+		Plot3D.controls.onMouseUp(event)
+	})
 	/* Event listeners for changing the OrbitControls based on user input */
 	document.getElementById('radiusValue').addEventListener('change', function(event) {
 		if (!validateNumericInput(this.value)) { return false; }
