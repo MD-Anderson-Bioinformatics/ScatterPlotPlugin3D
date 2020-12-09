@@ -1,6 +1,7 @@
 
 body { 
 	margin: 0; 
+	min-width: 700px;
 }
 
 p,h1,a { 
@@ -21,29 +22,41 @@ p,h1,a {
 #scatter-plot-3d-canvas { 
 	margin-left: 3%;
 	margin-right: 3%;
-	width: 80% !important ;
-	height: 80% !important ;
-	max-width: 850px;
-	min-width: 250px;
+	width: 95% !important ;
+	height: 95% !important ;
+	max-height: min(95%, 500px);
+	min-width: 600px;
+	min-height: 250px;
+	border: 1px solid #D3D3D3;
 }
 
 #legend {
 	top: 90px;
 	width: auto;
 	height: auto;
-	max-height: 600px !important ;
-	/*max-height: 70% !important ;*/
-	white-space: nowrap;
+	max-height: 600px;
+	max-width: min(20%,200px);
+	min-width: 100px;
+	margin-right: 3%;
 	border: 1px solid #D3D3D3;
 	overflow: scroll;
+	user-select: none;
 }
 
 .legendEntry {
 	padding-left: 5px;
 	padding-right: 5px;
+	font-size: 16px;
+	font-size: min(max(12px, 2vw), 18px);
+	white-space: nowrap;
 }
 
-/* Force scroll bar to appear on mac webkit browsers */
+.legendTitle {
+	font-size: 18px;
+	font-size: min(max(14px, 2vw), 20px);
+}
+
+/* Force scroll bar to appear on mac webkit browsers in legend and body */
 #legend::-webkit-scrollbar {
 	-webkit-appearance: none;
 	width: 7px;
@@ -53,23 +66,34 @@ p,h1,a {
 	background-color: rgba(0, 0, 0, .2);
 	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
+body::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 7px;
+}
+body::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, .2);
+	box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
 
 /* color labels for legend */
 .circle {
-	height: 10pt;
-	width: 10pt;
+	height: min(2vw,20px);
+	width: min(2vw,20px);
+	margin-left: 5pt;
 	margin-right: 5pt;
 	border-radius: 50%;
 	display: inline-block;
 }
 
 #icons-div {
-	width: 60%;
+	width: 320px;
 	float: left;
+	user-select: none;
 }
 
 #name-coords-div {
-	margin-left: 50%;
+	margin-left: 20px;
 	padding-right: 20px;
 	margin-right: 20px;
 }
@@ -79,7 +103,19 @@ p,h1,a {
 	text-align: right;
 	font-size: 16px;
 	font-weight: bold;
+	overflow: visible;
+	white-space: nowrap;
 }
+/* Ensure scrollbars never shown (This element only appears when
+	user is hovering elswhere) */
+#point-name::-webkit-scrollbar {  /* Chrome, Safari and Opera */
+	display: none;
+}
+#point-name  {
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
 #show-hover-point-coords{
 	height: 16px;
 	text-align: right;

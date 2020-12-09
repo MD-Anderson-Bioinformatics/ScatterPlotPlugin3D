@@ -49,7 +49,18 @@ function initHoverToHighlight() {
 		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera);
 	}
 
-	document.addEventListener('mousemove',findPointUnderMouse)
+	/* generic debounce function */
+	function debounce(func, wait = 100) {
+		let timeout;
+		return function(...args) {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				func.apply(this, args)
+			}, wait);
+		}
+	}
+
+	document.addEventListener('mousemove', debounce(findPointUnderMouse))
 	document.addEventListener('mouseout', clearMousePointerPosition);
 	document.addEventListener('mouseleave', clearMousePointerPosition);
 }
@@ -135,10 +146,11 @@ class PickHelper {
 	*/
 	postSelectLabels(points, clickType) {
 		if (arraysEqual(points, lastPostedPointIds)) {return} 
+		//console.log({mar4: 'posting selectLabels on hover'})
 		VAN.postMessage({
 			op: 'selectLabels',
 			selection: {
-				axis: 'column',
+				axis: Plot3D.ngchmAxis,
 				pointIds: points,
 				clickType: clickType
 			}

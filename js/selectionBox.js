@@ -1,5 +1,6 @@
 import {Plot3D} from '../scatterPlot3D.js'
 import {VAN} from '../interface_js/ngchm.js'
+import {SelectPoints} from './selections.js'
 
 /*
 	This module contains code for selecting points by dragging the mouse
@@ -23,7 +24,7 @@ export function initDragToSelect() {
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mousedown', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		if (!event.metaKey && !event.ctrlKey) {
-			clearSelectedSpheres()
+			SelectPoints.clearSelectedPointIds(Plot3D.selectedPointIds)
 		} 
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
@@ -34,12 +35,13 @@ export function initDragToSelect() {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
 		helper.element.hidden = false;
 		if (helper.isDown) {
+			clearTmpSpheres()
 			let pos = Plot3D.getMouseXYZ(event)
 			selectionBox.endPoint.set(pos.x, pos.y, pos.z)
 			selectionBox.select().forEach(pt => {
 				let sphere = new THREE.Mesh(Plot3D.geometriesMaterials.selection.geometry, Plot3D.geometriesMaterials.selection.material)
 				sphere.position.set(pt.position.x, pt.position.y, pt.position.z)
-				sphere.userData.type = 'select sphere'
+				sphere.userData.type = 'select sphere tmp'
 				Plot3D.scene.add(sphere)
 			})
 			Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
@@ -48,31 +50,35 @@ export function initDragToSelect() {
 	/* drag end */
 	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseup', function(event) {
 		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		if (helper.mouseLeft == true) {return false}
+		clearTmpSpheres()
 		helper.element.hidden = false;
 		let pos = Plot3D.getMouseXYZ(event)
 		selectionBox.endPoint.set(pos.x, pos.y, pos.z)
-		selectionBox.select().forEach(a => {
-			Plot3D.selectedPointIds.push(a.userData.id)
+		selectionBox.select().forEach(pt => {
+			Plot3D.selectedPointIds.push(pt.userData.id)
 		})
+		SelectPoints.selectPoints(Plot3D.selectedPointIds)
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
 		VAN.postMessage({ 
 			op: 'selectLabels',
 			selection: {
-				axis: 'column',
+				axis: Plot3D.ngchmAxis,
 				pointIds: Plot3D.selectedPointIds,
 				clickType: 'ctrlClick'
 			}
 		})
 	})
+	/* cancel selection if mouse moves off canvas */
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseout', function(event) {
+		if (Plot3D.mode != 'select') {helper.element.hidden = true; return false}
+		clearTmpSpheres()
+		Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+	})
 } // end function initDragToSelect
 
-
-function clearSelectedSpheres() {
-	Plot3D.selectedPointIds = []
-	while (Plot3D.scene.getObjectByUserDataProperty('type','select sphere') != undefined) {
-		let sphere = Plot3D.scene.getObjectByUserDataProperty('type', 'select sphere')
-		Plot3D.scene.remove(sphere)
-	}
-	Plot3D.renderer.render(Plot3D.scene, Plot3D.camera)
+function clearTmpSpheres() {
+	Plot3D.scene.removeObjectsByUserDataProperty('type','select sphere tmp')
 }
 
 /*
@@ -179,10 +185,12 @@ class SelectionHelper {
 		this.element.style.pointerEvents = 'none'
 		this.startPoint = new THREE.Vector2()
 		this.isDown = false;
+		this.mouseLeft = false;
 		this.renderer = renderer;
 		/* Starts draw of helper box (.selectBox) */
 		this.renderer.domElement.addEventListener('mousedown', e => {
 			this.isDown = true;
+			this.mouseLeft = false;
 			this.renderer.domElement.parentElement.appendChild(this.element)
 			this.element.style.left = e.clientX + 'px'
 			this.element.style.top = e.clientY + 'px'
@@ -205,7 +213,17 @@ class SelectionHelper {
 		/* Remove helper box (.selectBox) */
 		this.renderer.domElement.addEventListener('mouseup', e => {
 			this.isDown = false
-			this.element.parentElement.removeChild(this.element)
+			if (typeof(this.element.parentElement) != 'undefined' && this.element.parentElement != null) {
+				this.element.parentElement.removeChild(this.element)
+			}
+		})
+		/* Remove helper box (.selectBox) */
+		this.renderer.domElement.addEventListener('mouseout', e => {
+			this.isDown = false
+			this.mouseLeft = true
+			if (typeof(this.element.parentElement) != 'undefined' && this.element.parentElement != null) {
+				this.element.parentElement.removeChild(this.element)
+			}
 		})
 	}
 } // end class Selection Helper

@@ -5,7 +5,7 @@
 		<meta charset='utf-8'/>
 		<link rel='stylesheet' href='./css/main.css'>
 		<script src="resources/three.min.js"></script>
-		<script src="resources/OrbitControls.js"></script>
+		<script src="js/OrbitControls.js"></script>
 		<script src="demo_js/d3.v5.min.js"></script> <!-- only using d3 to load a local file and resolve promise when loaded -->
 		<script src="demo_js/threex.rendererstats.js"></script>  <!-- only using threex for profiling in demo plot -->
 		<script type="module" src="./scatterPlot3D.js"></script>
@@ -26,6 +26,8 @@
 						backgroundColor: 'ivory',
 						showOriginAxes: 'true'
 					}
+					Plot3D.nonce = 'my-fake-nonce'
+					Plot3D.selectedPointIds = []
 					Plot3D.createPlot(data, plotOptions);
 					//Plot3D.createPlot(data.slice(0,300), plotOptions);
 					window.redraw = function redraw() {
@@ -33,7 +35,7 @@
 						plotOptions.colorAxes = 'off'
 						plotOptions.yLabel = 'Y'
 						plotOptions.zLabel = 'Z'
-						Plot3D.createPlot(data.slice(400,500), plotOptions);
+						Plot3D.createPlot(data, plotOptions);
 					}
 					window.reset = function reset() {
 						Plot3D.setRadius(Plot3D.spherical.r)

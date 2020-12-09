@@ -6,6 +6,7 @@ import {HoverHelper} from './js/hoverHelper.js';
 import {addBoxAxes, addOriginAxes} from './js/drawAxes.js';
 import {initDragToSelect} from './js/selectionBox.js';
 import {drawLegend} from './js/legend.js'
+import {SelectPoints} from './js/selections.js';
 
 
 /* Expored Plot3D object containes the function listed here,
@@ -18,8 +19,6 @@ export const Plot3D = {
 	setAzimuthalAngle,
 	setRadius
 };
-
-Plot3D.selectedPointIds = []
 
 /* Exported function to return mouse XYZ coordinates in the scene
 
@@ -59,7 +58,8 @@ function validateNumericInput(value) {
 /* Function to save spherical coordiantes of OrbitControls
 
 	Saves the r, theta, and phi of the current OrbitControls
-	to Plot3D.spherical.
+	to Plot3D.spherical and to session storage in the key/value pair:
+	nonce: JSON.stringify(Plot3D.spherical).
 	(these can be used to reset the rotation/zoom)
 */
 function saveSphericalCoordinates() {
@@ -68,16 +68,24 @@ function saveSphericalCoordinates() {
 		theta: Plot3D.controls.getAzimuthalAngle(),
 		phi: Plot3D.controls.getPolarAngle()
 	}
+	sessionStorage.setItem(Plot3D.nonce, JSON.stringify(Plot3D.spherical))
 }
 
 /* Function to set spherical cooridinates of OrbitControls
 
 	Sets the r, theta, and phi of OrbitControls using the values
-	in Plot3D.spherical if defined, otherwise initializes them to
+	in Plot3D.spherical if defined, otherwise use the values from sessionStorage
+	for this nonce if defined, otherwise set to
 	reasonable initial values.
 */
 function setSphericalCoordinates() {
+	let storedSphericalCoords = sessionStorage.getItem(Plot3D.nonce)
 	if (typeof Plot3D.spherical !== 'undefined') {
+		Plot3D.setRadius(Plot3D.spherical.r)
+		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
+		Plot3D.setPolarAngle(Plot3D.spherical.phi)
+	} else if (storedSphericalCoords != null) {
+		Plot3D.spherical = JSON.parse(storedSphericalCoords)
 		Plot3D.setRadius(Plot3D.spherical.r)
 		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
 		Plot3D.setPolarAngle(Plot3D.spherical.phi)
@@ -237,6 +245,7 @@ function initializeScene() {
 	});
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
 	Plot3D.controls = new THREE.OrbitControls(Plot3D.camera, Plot3D.renderer.domElement);
+	Plot3D.controls.enablePan = false
 	setSphericalCoordinates()
 }
 
@@ -258,6 +267,7 @@ function createScales(dataPoints) {
 
 /* redraw the plot with appropriate aspect ratio on window resize */
 window.addEventListener('resize', () => {
+	if (Plot3D.camera == undefined) {return}
 	Plot3D.camera.aspect = window.innerWidth / window.innerHeight;
 	Plot3D.camera.updateProjectionMatrix();
 	Plot3D.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -354,6 +364,7 @@ function createPlot(data, _plotOptions) {
 		ptObject.userData.type = 'data point'
 		ptObject.userData.id = pt.id
 		ptObject.userData.group = pt.group
+		ptObject.userData.groupColor = pt.color
 		ptObject.userData.coordinates = {x: pt.x, y: pt.y, z: pt.z}
 		Plot3D.scene.add(ptObject)
 	})
@@ -362,6 +373,8 @@ function createPlot(data, _plotOptions) {
 		addOriginAxes()
 	}
 	drawLegend(dataPoints)
+	saveSphericalCoordinates()
+	SelectPoints.selectPoints(Plot3D.selectedPointIds)
 
 	/* when user clicks on icon 'buttons', change mode to that of the clicked icon */
 	document.getElementById('orbit-controls-icon').addEventListener('click', (event) => {
@@ -393,6 +406,7 @@ function createPlot(data, _plotOptions) {
 		}
 	})
 	document.getElementById('icons-div').style.visibility = 'visible'
+	//document.getElementById('drag-to-select-icon').click()
 	document.getElementById('orbit-controls-icon').click()
 	document.getElementById('scatter-plot-3d-canvas').style.visibility = 'visible'
 	initDragToSelect();
@@ -420,6 +434,9 @@ function createPlot(data, _plotOptions) {
 		Plot3D.disableHoverHighlight = false;
 		displayAngles()
 		saveSphericalCoordinates()
+	})
+	document.getElementById('scatter-plot-3d-canvas').addEventListener('mouseout', function(event) {
+		Plot3D.controls.onMouseUp(event)
 	})
 	/* Event listeners for changing the OrbitControls based on user input */
 	document.getElementById('radiusValue').addEventListener('change', function(event) {

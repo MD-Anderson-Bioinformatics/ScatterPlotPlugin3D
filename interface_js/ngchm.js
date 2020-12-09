@@ -90,6 +90,12 @@ VAN.addMessageListener('plot', function(vanodi) {
 		})
 	})
 	Plot3D.ngchmAxis = vanodi.config.axes[0].axisName;
+	if (vanodi.data.axes[0].hasOwnProperty('selectedLabels')) {
+		Plot3D.selectedPointIds = vanodi.data.axes[0].selectedLabels
+	} else {
+		Plot3D.selectedPointIds = []
+	}
+	Plot3D.nonce = vanodi.nonce
 	Plot3D.createPlot(plotData,plotOptions)
 })
 
@@ -100,6 +106,6 @@ VAN.addMessageListener ('makeHiLite', function hiliteMessageHandler (vanodi) {
 	if (Plot3D.ngchmAxis && Plot3D.ngchmAxis.toLowerCase() != vanodi.data.axis.toLowerCase()) {
 		return false;
 	}
-	SelectPoints.clearSelectedPoints();
+	SelectPoints.clearSelectedPointIds();
 	SelectPoints.selectPoints(vanodi.data.pointIds)
 });
