@@ -17,7 +17,8 @@ export const Plot3D = {
 	getMouseXYZ,
 	setPolarAngle,
 	setAzimuthalAngle,
-	setRadius
+	setRadius,
+	setSphericalCoordinates
 };
 
 /* Exported function to return mouse XYZ coordinates in the scene
@@ -78,9 +79,13 @@ function saveSphericalCoordinates() {
 	for this nonce if defined, otherwise set to
 	reasonable initial values.
 */
-function setSphericalCoordinates() {
+function setSphericalCoordinates(sphericalCoordinates) {
 	let storedSphericalCoords = sessionStorage.getItem(Plot3D.nonce)
-	if (typeof Plot3D.spherical !== 'undefined') {
+	if (sphericalCoordinates != null) {
+		Plot3D.setRadius(sphericalCoordinates.r);
+		Plot3D.setAzimuthalAngle(sphericalCoordinates.theta);
+		Plot3D.setPolarAngle(sphericalCoordinates.phi);
+	} else if (typeof Plot3D.spherical !== 'undefined') {
 		Plot3D.setRadius(Plot3D.spherical.r)
 		Plot3D.setAzimuthalAngle(Plot3D.spherical.theta)
 		Plot3D.setPolarAngle(Plot3D.spherical.phi)
