@@ -18,7 +18,8 @@ export const Plot3D = {
 	setPolarAngle,
 	setAzimuthalAngle,
 	setRadius,
-	setSphericalCoordinates
+	setSphericalCoordinates,
+	saveSphericalCoordinates
 };
 
 /* Exported function to return mouse XYZ coordinates in the scene

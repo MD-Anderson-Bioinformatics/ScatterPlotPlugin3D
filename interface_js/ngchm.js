@@ -131,5 +131,6 @@ VAN.addMessageListener('requestForPluginData', function requestDataHandler(vanod
 VAN.addMessageListener('savedPluginData', function addSavedData(vanodi) {
 	sessionStorage.setItem(Plot3D.nonce, JSON.stringify(vanodi.dataFromPlugin.spherical));
 	Plot3D.setSphericalCoordinates(vanodi.dataFromPlugin.spherical);
+	Plot3D.saveSphericalCoordinates();
 })
 
