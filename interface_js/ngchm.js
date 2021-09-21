@@ -118,8 +118,7 @@ VAN.addMessageListener ('makeHiLite', function hiliteMessageHandler (vanodi) {
 */
 VAN.addMessageListener('requestForPluginData', function requestDataHandler(vanodi) {
 	VAN.postMessage({
-		op: 'sendingForPluginData',
-		msg: 'sending data from plugin',
+		op: 'sendingPluginData',
 		pluginData: {spherical: Plot3D.spherical}
 	})
 })
@@ -129,8 +128,10 @@ VAN.addMessageListener('requestForPluginData', function requestDataHandler(vanod
    This listener is for receiving data from the NGCHM that is required for recreating a 'saved state'.
 */
 VAN.addMessageListener('savedPluginData', function addSavedData(vanodi) {
-	sessionStorage.setItem(Plot3D.nonce, JSON.stringify(vanodi.dataFromPlugin.spherical));
-	Plot3D.setSphericalCoordinates(vanodi.dataFromPlugin.spherical);
-	Plot3D.saveSphericalCoordinates();
+	if (vanodi.dataFromPlugin != undefined) {
+		sessionStorage.setItem(Plot3D.nonce, JSON.stringify(vanodi.dataFromPlugin.spherical));
+		Plot3D.setSphericalCoordinates(vanodi.dataFromPlugin.spherical);
+		Plot3D.saveSphericalCoordinates();
+	}
 })
 
